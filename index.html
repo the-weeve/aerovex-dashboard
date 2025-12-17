@@ -3582,26 +3582,34 @@
                 
                 context += `HISTORICAL DATA (${businessData.length} months):\n`;
                 businessData.forEach(m => {
-                    const mSpend = m.googleSpend + m.metaSpend;
-                    const mRev = m.googleRevenue + m.metaRevenue;
+                    const mSpend = (m.googleSpend || 0) + (m.metaSpend || 0);
+                    const mRev = (m.googleRevenue || 0) + (m.metaRevenue || 0);
                     const mRoas = mSpend > 0 ? (mRev / mSpend).toFixed(2) : 'N/A';
-                    context += `- ${m.month}: Sales $${m.totalSales.toLocaleString()}, Ad Spend $${mSpend.toLocaleString()}, Ad Revenue $${mRev.toLocaleString()}, ROAS ${mRoas}x, Traffic ${m.traffic.toLocaleString()}\n`;
+                    const sales = m.totalSales || 0;
+                    const traffic = m.traffic || 0;
+                    context += `- ${m.month}: Sales $${sales.toLocaleString()}, Ad Spend $${mSpend.toLocaleString()}, Ad Revenue $${mRev.toLocaleString()}, ROAS ${mRoas}x, Traffic ${traffic.toLocaleString()}\n`;
                 });
             }
             
             if (metaData && metaData.campaigns && metaData.campaigns.length > 0) {
                 context += `\nMETA CAMPAIGNS:\n`;
                 metaData.campaigns.forEach(c => {
-                    const roas = c.cost > 0 ? (c.revenue / c.cost).toFixed(2) : 'N/A';
-                    context += `- ${c.name}: Spend $${c.cost.toLocaleString()}, Revenue $${c.revenue.toLocaleString()}, ROAS ${roas}x, Clicks ${c.clicks.toLocaleString()}\n`;
+                    const cost = c.cost || 0;
+                    const revenue = c.revenue || 0;
+                    const clicks = c.clicks || 0;
+                    const roas = cost > 0 ? (revenue / cost).toFixed(2) : 'N/A';
+                    context += `- ${c.name || 'Unknown'}: Spend $${cost.toLocaleString()}, Revenue $${revenue.toLocaleString()}, ROAS ${roas}x, Clicks ${clicks.toLocaleString()}\n`;
                 });
             }
             
             if (googleData && googleData.campaigns && googleData.campaigns.length > 0) {
                 context += `\nGOOGLE CAMPAIGNS:\n`;
                 googleData.campaigns.forEach(c => {
-                    const roas = c.cost > 0 ? (c.revenue / c.cost).toFixed(2) : 'N/A';
-                    context += `- ${c.name}: Spend $${c.cost.toLocaleString()}, Revenue $${c.revenue.toLocaleString()}, ROAS ${roas}x, Clicks ${c.clicks.toLocaleString()}\n`;
+                    const cost = c.cost || 0;
+                    const revenue = c.revenue || 0;
+                    const clicks = c.clicks || 0;
+                    const roas = cost > 0 ? (revenue / cost).toFixed(2) : 'N/A';
+                    context += `- ${c.name || 'Unknown'}: Spend $${cost.toLocaleString()}, Revenue $${revenue.toLocaleString()}, ROAS ${roas}x, Clicks ${clicks.toLocaleString()}\n`;
                 });
             }
             

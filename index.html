@@ -606,46 +606,152 @@
         
         .platform-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
             margin-bottom: 32px;
         }
         
-        .platform-card {
+        @media (max-width: 900px) {
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .donut-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 24px;
             text-align: center;
             transition: all 0.3s ease;
         }
         
-        .platform-card:hover {
-            transform: translateY(-2px);
-            border-color: #d1d5db;
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+        body.dark-mode .donut-card {
+            background: #1f2937;
+            border-color: #374151;
         }
         
-        .platform-name {
-            font-size: 12px;
+        .donut-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .donut-title {
+            font-size: 13px;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             font-weight: 500;
         }
         
-        .platform-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1a1d29;
-            margin-bottom: 8px;
+        .donut-wrapper {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
         }
         
-        .platform-subtext {
-            font-size: 13px;
+        .donut-svg {
+            transform: rotate(-90deg);
+        }
+        
+        .donut-bg {
+            fill: none;
+            stroke: #e5e7eb;
+            stroke-width: 20;
+        }
+        
+        body.dark-mode .donut-bg {
+            stroke: #374151;
+        }
+        
+        .donut-segment {
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .donut-total-label {
+            font-size: 11px;
             color: #9ca3af;
         }
+        
+        .donut-total-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1d29;
+        }
+        
+        body.dark-mode .donut-total-value {
+            color: #fff;
+        }
+        
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 8px;
+        }
+        
+        body.dark-mode .legend-item {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-name {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .legend-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1d29;
+        }
+        
+        body.dark-mode .legend-value {
+            color: #fff;
+        }
+        
+        .legend-percent {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-left: 6px;
+        }
+        
+        .stroke-meta { stroke: #3b82f6; }
+        .stroke-google { stroke: #ea4335; }
+        .stroke-profit-meta { stroke: #22c55e; }
+        .stroke-profit-google { stroke: #4ade80; }
         
         table {
             width: 100%;
@@ -1144,7 +1250,7 @@
                 <h2 class="section-title">Overview</h2>
                 <div class="metrics-grid" id="campaignMetrics"></div>
                 
-                <h2 class="section-title">Platform Performance</h2>
+                <h2 class="section-title">Platform Comparison</h2>
                 <div class="platform-grid" id="platformMetrics"></div>
                 
                 <div class="chart-section">
@@ -1703,17 +1809,141 @@
             `;
             document.getElementById('campaignMetrics').innerHTML = metricsHTML;
             
-            // Platform metrics
+            // Calculate percentages for donut charts
+            const metaSpendPct = metrics.total.spend > 0 ? (metrics.meta.spend / metrics.total.spend) * 100 : 0;
+            const googleSpendPct = 100 - metaSpendPct;
+            const metaRevPct = metrics.total.revenue > 0 ? (metrics.meta.revenue / metrics.total.revenue) * 100 : 0;
+            const googleRevPct = 100 - metaRevPct;
+            
+            const metaProfit = (metrics.meta.revenue * metrics.margin) - metrics.meta.spend;
+            const googleProfit = (metrics.google.revenue * metrics.margin) - metrics.google.spend;
+            const totalProfit = metaProfit + googleProfit;
+            const metaProfitPct = totalProfit > 0 ? (metaProfit / totalProfit) * 100 : 50;
+            const googleProfitPct = 100 - metaProfitPct;
+            
+            // SVG circle circumference for r=60 is ~377
+            const circumference = 377;
+            
+            // Platform donut charts
             let platformHTML = `
-                <div class="platform-card">
-                    <div class="platform-name">Meta Ads</div>
-                    <div class="platform-value">${metrics.meta.roas.toFixed(2)}x</div>
-                    <div class="platform-subtext">${formatCurrency(metrics.meta.revenue)} revenue</div>
+                <!-- Spend Donut -->
+                <div class="donut-card">
+                    <div class="donut-title">Where's The Money Going?</div>
+                    <div class="donut-wrapper">
+                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
+                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
+                            <circle class="donut-segment stroke-google" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleSpendPct/100)}"/>
+                            <circle class="donut-segment stroke-meta" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference * metaSpendPct/100} ${circumference}" stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-total-label">Total Spend</div>
+                            <div class="donut-total-value">${formatCurrency(metrics.total.spend)}</div>
+                        </div>
+                    </div>
+                    <div class="donut-legend">
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #3b82f6;"></div>
+                                <span class="legend-name">Meta</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(metrics.meta.spend)}</span>
+                                <span class="legend-percent">${metaSpendPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #ea4335;"></div>
+                                <span class="legend-name">Google</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(metrics.google.spend)}</span>
+                                <span class="legend-percent">${googleSpendPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="platform-card">
-                    <div class="platform-name">Google Ads</div>
-                    <div class="platform-value">${metrics.google.roas.toFixed(2)}x</div>
-                    <div class="platform-subtext">${formatCurrency(metrics.google.revenue)} revenue</div>
+                
+                <!-- Revenue Donut -->
+                <div class="donut-card">
+                    <div class="donut-title">Where's It Coming From?</div>
+                    <div class="donut-wrapper">
+                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
+                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
+                            <circle class="donut-segment stroke-google" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleRevPct/100)}"/>
+                            <circle class="donut-segment stroke-meta" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference * metaRevPct/100} ${circumference}" stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-total-label">Total Revenue</div>
+                            <div class="donut-total-value">${formatCurrency(metrics.total.revenue)}</div>
+                        </div>
+                    </div>
+                    <div class="donut-legend">
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #3b82f6;"></div>
+                                <span class="legend-name">Meta</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(metrics.meta.revenue)}</span>
+                                <span class="legend-percent">${metaRevPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #ea4335;"></div>
+                                <span class="legend-name">Google</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(metrics.google.revenue)}</span>
+                                <span class="legend-percent">${googleRevPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profit Donut -->
+                <div class="donut-card">
+                    <div class="donut-title">Who's More Profitable?</div>
+                    <div class="donut-wrapper">
+                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
+                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
+                            <circle class="donut-segment stroke-profit-google" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleProfitPct/100)}"/>
+                            <circle class="donut-segment stroke-profit-meta" cx="80" cy="80" r="60" 
+                                    stroke-dasharray="${circumference * metaProfitPct/100} ${circumference}" stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-total-label">Total Profit</div>
+                            <div class="donut-total-value">${formatCurrency(totalProfit)}</div>
+                        </div>
+                    </div>
+                    <div class="donut-legend">
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #22c55e;"></div>
+                                <span class="legend-name">Meta</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(metaProfit)}</span>
+                                <span class="legend-percent">${metaProfitPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <div class="legend-dot" style="background: #4ade80;"></div>
+                                <span class="legend-name">Google</span>
+                            </div>
+                            <div>
+                                <span class="legend-value">${formatCurrency(googleProfit)}</span>
+                                <span class="legend-percent">${googleProfitPct.toFixed(0)}%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
             document.getElementById('platformMetrics').innerHTML = platformHTML;

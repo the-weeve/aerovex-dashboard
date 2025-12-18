@@ -1092,7 +1092,6 @@
             <div class="tab active" onclick="switchTab('business')">Total Business Overview</div>
             <div class="tab" onclick="switchTab('campaigns')">Ad Campaign Performance</div>
             <div class="tab" onclick="switchTab('trends')">Monthly Trends</div>
-            <div class="tab" onclick="switchTab('forecast')">Forecasting</div>
             <div class="tab" onclick="switchTab('summary')">Executive Summary</div>
         </div>
     </div>
@@ -1304,43 +1303,6 @@
             </div>
         </div>
         
-        <!-- Forecasting Tab -->
-        <div class="tab-content" id="forecastTab">
-            <div class="dashboard-content active" id="forecastDashboardContent">
-                <div class="page-header">
-                    <div class="page-header-text">
-                        <h1 class="page-title">Forecasting</h1>
-                        <p class="page-subtitle" id="forecastPageSubtitle">Current month projections based on daily averages</p>
-                    </div>
-                    <div class="tab-margin-selector">
-                        <label for="forecastMargin">Margin:</label>
-                        <select id="forecastMargin" onchange="updateAllTabs()">
-                            <option value="0.30">30%</option>
-                            <option value="0.35">35%</option>
-                            <option value="0.40">40%</option>
-                            <option value="0.45">45%</option>
-                            <option value="0.50">50%</option>
-                            <option value="0.55">55%</option>
-                            <option value="0.60" selected>60%</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <h2 class="section-title">Month Progress</h2>
-                <div class="chart-section" style="margin-bottom: 32px;">
-                    <div id="progressContainer" style="margin-bottom: 24px;"></div>
-                </div>
-                
-                <h2 class="section-title">On Pace For</h2>
-                <div class="metrics-grid" id="forecastMetrics"></div>
-                
-                <h2 class="section-title">Current vs Projected</h2>
-                <div class="chart-section">
-                    <div id="projectionDetails"></div>
-                </div>
-            </div>
-        </div>
-        
         <!-- Executive Summary Tab -->
         <div class="tab-content" id="summaryTab">
             <div class="dashboard-content active" id="summaryDashboardContent">
@@ -1371,11 +1333,6 @@
                 
                 <h2 class="section-title">Performance Trends</h2>
                 <div class="sparklines-grid" id="sparklineCards"></div>
-                
-                <h2 class="section-title">Insights</h2>
-                <div class="chart-section">
-                    <div id="summaryInsights"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -1443,11 +1400,6 @@
                 if (businessData) {
                     updateTrendsDashboard();
                 }
-            } else if (tabName === 'forecast') {
-                document.getElementById('forecastTab').classList.add('active');
-                if (businessData) {
-                    updateForecastDashboard();
-                }
             } else if (tabName === 'summary') {
                 document.getElementById('summaryTab').classList.add('active');
                 if (businessData) {
@@ -1477,7 +1429,7 @@
             const newMargin = event.target.value;
             
             // Sync all margin selectors to the same value
-            const marginSelectors = ['businessMargin', 'campaignMargin', 'trendsMargin', 'forecastMargin', 'summaryMargin'];
+            const marginSelectors = ['businessMargin', 'campaignMargin', 'trendsMargin', 'summaryMargin'];
             marginSelectors.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = newMargin;
@@ -1490,7 +1442,6 @@
             if (businessData) {
                 updateBusinessDashboard();
                 updateTrendsDashboard();
-                updateForecastDashboard();
                 updateSummaryDashboard();
             }
         }
@@ -2973,164 +2924,6 @@
         }
         
         // ==========================================
-        // FORECASTING CODE
-        // ==========================================
-        
-        function updateForecastDashboard() {
-            if (!businessData || businessData.length === 0) {
-                document.getElementById('forecastMetrics').innerHTML = '<p style="color: #6b7280;">No business data available for forecasting.</p>';
-                return;
-            }
-            
-            const currentMonth = businessData[businessData.length - 1];
-            const margin = parseFloat(document.getElementById('businessMargin').value);
-            
-            // Use days from CSV, calculate total days in month from month name
-            let daysElapsed = currentMonth.days || 30;
-            let totalDaysInMonth = 31;
-            let monthName = currentMonth.month;
-            
-            try {
-                const monthYear = currentMonth.month.split(' ');
-                const monthMap = {
-                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-                };
-                const monthIndex = monthMap[monthYear[0]];
-                const year = parseInt(monthYear[1]);
-                
-                if (monthIndex !== undefined && !isNaN(year)) {
-                    totalDaysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-                }
-            } catch (e) {
-                console.error('Error calculating days:', e);
-            }
-            
-            const percentComplete = (daysElapsed / totalDaysInMonth) * 100;
-            
-            // Calculate daily averages and projections
-            const dailyRevenue = currentMonth.totalSales / daysElapsed;
-            const projectedRevenue = dailyRevenue * totalDaysInMonth;
-            
-            const currentAdSpend = currentMonth.googleSpend + currentMonth.metaSpend;
-            const dailyAdSpend = currentAdSpend / daysElapsed;
-            const projectedAdSpend = dailyAdSpend * totalDaysInMonth;
-            
-            const currentAdRevenue = currentMonth.googleRevenue + currentMonth.metaRevenue;
-            const dailyAdRevenue = currentAdRevenue / daysElapsed;
-            const projectedAdRevenue = dailyAdRevenue * totalDaysInMonth;
-            
-            const dailyTraffic = currentMonth.traffic / daysElapsed;
-            const projectedTraffic = dailyTraffic * totalDaysInMonth;
-            
-            const projectedRoas = projectedAdSpend > 0 ? projectedAdRevenue / projectedAdSpend : 0;
-            const projectedGrossProfit = projectedAdRevenue * margin;
-            const projectedNetProfit = projectedGrossProfit - projectedAdSpend;
-            
-            document.getElementById('forecastPageSubtitle').textContent = 
-                `${monthName} • Day ${daysElapsed} of ${totalDaysInMonth} • ${percentComplete.toFixed(0)}% complete`;
-            
-            // Progress bar
-            const progressColor = percentComplete > 50 ? '#10b981' : '#3b82f6';
-            document.getElementById('progressContainer').innerHTML = `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #6b7280;">
-                    <span>Day ${daysElapsed}</span>
-                    <span>Day ${totalDaysInMonth}</span>
-                </div>
-                <div style="background: #e5e7eb; border-radius: 12px; height: 24px; overflow: hidden;">
-                    <div style="background: ${progressColor}; height: 100%; width: ${percentComplete}%; border-radius: 12px; transition: width 0.5s ease;"></div>
-                </div>
-                <div style="text-align: center; margin-top: 8px; font-size: 14px; color: #6b7280;">
-                    ${percentComplete.toFixed(0)}% through ${monthName}
-                </div>
-            `;
-            
-            // Forecast metrics
-            let metricsHTML = `
-                <div class="metric-card">
-                    <div class="metric-label">Total Revenue</div>
-                    <div class="metric-value">${formatCurrency(projectedRevenue)}</div>
-                    <div class="metric-subtext">Currently: ${formatCurrency(currentMonth.totalSales)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Revenue</div>
-                    <div class="metric-value">${formatCurrency(projectedAdRevenue)}</div>
-                    <div class="metric-subtext">Currently: ${formatCurrency(currentAdRevenue)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Spend</div>
-                    <div class="metric-value">${formatCurrency(projectedAdSpend)}</div>
-                    <div class="metric-subtext">Currently: ${formatCurrency(currentAdSpend)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Projected ROAS</div>
-                    <div class="metric-value">${projectedRoas.toFixed(2)}x</div>
-                    <div class="metric-subtext">Break-even: ${(1/margin).toFixed(1)}x</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Net Profit</div>
-                    <div class="metric-value ${projectedNetProfit >= 0 ? 'positive' : ''}">${formatCurrency(projectedNetProfit)}</div>
-                    <div class="metric-subtext">At ${(margin * 100).toFixed(0)}% margin</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Website Traffic</div>
-                    <div class="metric-value">${Math.round(projectedTraffic).toLocaleString()}</div>
-                    <div class="metric-subtext">Currently: ${currentMonth.traffic.toLocaleString()}</div>
-                </div>
-            `;
-            document.getElementById('forecastMetrics').innerHTML = metricsHTML;
-            
-            // Projection details table
-            const daysRemaining = totalDaysInMonth - daysElapsed;
-            document.getElementById('projectionDetails').innerHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Metric</th>
-                            <th>Current</th>
-                            <th>Daily Avg</th>
-                            <th>Projected EOD</th>
-                            <th>Remaining to Reach</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Total Revenue</td>
-                            <td>${formatCurrency(currentMonth.totalSales)}</td>
-                            <td>${formatCurrency(dailyRevenue)}</td>
-                            <td>${formatCurrency(projectedRevenue)}</td>
-                            <td>${formatCurrency(projectedRevenue - currentMonth.totalSales)}</td>
-                        </tr>
-                        <tr>
-                            <td>Ad Revenue</td>
-                            <td>${formatCurrency(currentAdRevenue)}</td>
-                            <td>${formatCurrency(dailyAdRevenue)}</td>
-                            <td>${formatCurrency(projectedAdRevenue)}</td>
-                            <td>${formatCurrency(projectedAdRevenue - currentAdRevenue)}</td>
-                        </tr>
-                        <tr>
-                            <td>Ad Spend</td>
-                            <td>${formatCurrency(currentAdSpend)}</td>
-                            <td>${formatCurrency(dailyAdSpend)}</td>
-                            <td>${formatCurrency(projectedAdSpend)}</td>
-                            <td>${formatCurrency(projectedAdSpend - currentAdSpend)}</td>
-                        </tr>
-                        <tr>
-                            <td>Website Traffic</td>
-                            <td>${currentMonth.traffic.toLocaleString()}</td>
-                            <td>${Math.round(dailyTraffic).toLocaleString()}</td>
-                            <td>${Math.round(projectedTraffic).toLocaleString()}</td>
-                            <td>${Math.round(projectedTraffic - currentMonth.traffic).toLocaleString()}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p style="color: #6b7280; margin-top: 16px; font-size: 14px;">
-                    * Projections based on ${daysElapsed}-day average. ${daysRemaining} days remaining in ${monthName}.
-                </p>
-            `;
-        }
-        
-        // ==========================================
         // EXECUTIVE SUMMARY CODE
         // ==========================================
         
@@ -3282,154 +3075,6 @@
                 </div>
             `;
             document.getElementById('summaryForecast').innerHTML = forecastHTML;
-            
-            // Generate insights
-            let insights = [];
-            
-            // ROAS insight
-            if (currentRoas >= breakevenRoas * 1.5) {
-                insights.push({ type: 'success', text: `ROAS is ${((currentRoas / breakevenRoas - 1) * 100).toFixed(0)}% above break-even — ads are highly profitable` });
-            } else if (currentRoas >= breakevenRoas) {
-                insights.push({ type: 'warning', text: `ROAS is ${((currentRoas / breakevenRoas - 1) * 100).toFixed(0)}% above break-even — ads are profitable but could improve` });
-            } else {
-                insights.push({ type: 'danger', text: `ROAS is ${((1 - currentRoas / breakevenRoas) * 100).toFixed(0)}% below break-even — ads are losing money` });
-            }
-            
-            // Revenue trend
-            if (lastMonth) {
-                if (revenueChange >= 10) {
-                    insights.push({ type: 'success', text: `Revenue up ${revenueChange.toFixed(1)}% vs last month — strong growth` });
-                } else if (revenueChange >= 0) {
-                    insights.push({ type: 'warning', text: `Revenue up ${revenueChange.toFixed(1)}% vs last month — steady` });
-                } else {
-                    insights.push({ type: 'danger', text: `Revenue down ${Math.abs(revenueChange).toFixed(1)}% vs last month` });
-                }
-            }
-            
-            // Traffic trend
-            if (lastMonth) {
-                if (trafficChange >= 10) {
-                    insights.push({ type: 'success', text: `Traffic up ${trafficChange.toFixed(1)}% vs last month` });
-                } else if (trafficChange >= 0) {
-                    insights.push({ type: 'warning', text: `Traffic up ${trafficChange.toFixed(1)}% vs last month — slight increase` });
-                } else {
-                    insights.push({ type: 'danger', text: `Traffic down ${Math.abs(trafficChange).toFixed(1)}% vs last month — needs attention` });
-                }
-            }
-            
-            // Ad spend efficiency
-            if (lastMonth && adSpendChange > 20 && roasChange < 0) {
-                insights.push({ type: 'danger', text: `Ad spend up ${adSpendChange.toFixed(0)}% but ROAS declining — review campaign efficiency` });
-            } else if (roasChange > 10) {
-                insights.push({ type: 'success', text: `ROAS improved ${roasChange.toFixed(0)}% vs last month — campaigns getting more efficient` });
-            }
-            
-            // Projection insight
-            const percentComplete = (daysElapsed / totalDaysInMonth) * 100;
-            const revenueProgress = lastMonth ? (currentMonth.totalSales / lastMonth.totalSales) * 100 : 0;
-            if (lastMonth && revenueProgress > percentComplete) {
-                insights.push({ type: 'success', text: `On pace to exceed last month's revenue by ${((projectedRevenue / lastMonth.totalSales - 1) * 100).toFixed(0)}%` });
-            }
-            
-            // Meta vs Google comparison
-            const metaSpend = currentMonth.metaSpend;
-            const googleSpend = currentMonth.googleSpend;
-            const metaRevenue = currentMonth.metaRevenue;
-            const googleRevenue = currentMonth.googleRevenue;
-            const metaRoas = metaSpend > 0 ? metaRevenue / metaSpend : 0;
-            const googleRoas = googleSpend > 0 ? googleRevenue / googleSpend : 0;
-            
-            if (metaSpend > 0 && googleSpend > 0) {
-                if (metaRoas > googleRoas * 1.2) {
-                    insights.push({ type: 'success', text: `Meta (${metaRoas.toFixed(2)}x) is outperforming Google (${googleRoas.toFixed(2)}x) — consider shifting budget` });
-                } else if (googleRoas > metaRoas * 1.2) {
-                    insights.push({ type: 'success', text: `Google (${googleRoas.toFixed(2)}x) is outperforming Meta (${metaRoas.toFixed(2)}x) — consider shifting budget` });
-                } else {
-                    insights.push({ type: 'warning', text: `Meta (${metaRoas.toFixed(2)}x) and Google (${googleRoas.toFixed(2)}x) performing similarly` });
-                }
-            }
-            
-            // Best month context
-            if (businessData.length >= 3) {
-                const allRevenues = businessData.map(m => m.totalSales);
-                const maxRevenue = Math.max(...allRevenues);
-                const bestMonthIndex = allRevenues.indexOf(maxRevenue);
-                const bestMonth = businessData[bestMonthIndex];
-                
-                if (currentMonth.totalSales === maxRevenue) {
-                    insights.push({ type: 'success', text: `This is your best revenue month on record!` });
-                } else {
-                    const percentOfBest = (currentMonth.totalSales / maxRevenue) * 100;
-                    if (percentOfBest >= 80) {
-                        insights.push({ type: 'success', text: `Revenue is ${percentOfBest.toFixed(0)}% of your best month (${bestMonth.month}: ${formatCurrency(maxRevenue)})` });
-                    } else if (percentOfBest >= 50) {
-                        insights.push({ type: 'warning', text: `Revenue is ${percentOfBest.toFixed(0)}% of your best month (${bestMonth.month}: ${formatCurrency(maxRevenue)})` });
-                    }
-                }
-            }
-            
-            // Channel breakdown
-            const websitePercent = currentMonth.totalSales > 0 ? (currentMonth.websiteSales / currentMonth.totalSales) * 100 : 0;
-            const lucasPercent = currentMonth.totalSales > 0 ? (currentMonth.lucasSales / currentMonth.totalSales) * 100 : 0;
-            const affiliatePercent = currentMonth.totalSales > 0 ? (currentMonth.affiliateSales / currentMonth.totalSales) * 100 : 0;
-            
-            // Find the dominant channel
-            const channels = [
-                { name: 'Website', percent: websitePercent, sales: currentMonth.websiteSales },
-                { name: 'Lucas', percent: lucasPercent, sales: currentMonth.lucasSales },
-                { name: 'Affiliate', percent: affiliatePercent, sales: currentMonth.affiliateSales }
-            ].sort((a, b) => b.percent - a.percent);
-            
-            insights.push({ type: 'warning', text: `Channel mix: ${channels[0].name} ${channels[0].percent.toFixed(0)}%, ${channels[1].name} ${channels[1].percent.toFixed(0)}%, ${channels[2].name} ${channels[2].percent.toFixed(0)}%` });
-            
-            // Channel trend vs last month
-            if (lastMonth) {
-                const lastLucasPercent = lastMonth.totalSales > 0 ? (lastMonth.lucasSales / lastMonth.totalSales) * 100 : 0;
-                const lastAffiliatePercent = lastMonth.totalSales > 0 ? (lastMonth.affiliateSales / lastMonth.totalSales) * 100 : 0;
-                
-                const lucasChange = lastMonth.lucasSales > 0 ? ((currentMonth.lucasSales - lastMonth.lucasSales) / lastMonth.lucasSales) * 100 : 0;
-                const affiliateChange = lastMonth.affiliateSales > 0 ? ((currentMonth.affiliateSales - lastMonth.affiliateSales) / lastMonth.affiliateSales) * 100 : 0;
-                
-                if (lucasChange > 20) {
-                    insights.push({ type: 'success', text: `Lucas channel up ${lucasChange.toFixed(0)}% vs last month` });
-                } else if (lucasChange < -20) {
-                    insights.push({ type: 'danger', text: `Lucas channel down ${Math.abs(lucasChange).toFixed(0)}% vs last month` });
-                }
-                
-                if (affiliateChange > 20) {
-                    insights.push({ type: 'success', text: `Affiliate channel up ${affiliateChange.toFixed(0)}% vs last month` });
-                } else if (affiliateChange < -20) {
-                    insights.push({ type: 'danger', text: `Affiliate channel down ${Math.abs(affiliateChange).toFixed(0)}% vs last month` });
-                }
-            }
-            
-            let insightsHTML = '<div style="display: flex; flex-direction: column; gap: 12px;">';
-            insights.forEach(insight => {
-                let icon, bgColor, textColor;
-                if (insight.type === 'success') {
-                    icon = '✓';
-                    bgColor = '#dcfce7';
-                    textColor = '#166534';
-                } else if (insight.type === 'warning') {
-                    icon = '●';
-                    bgColor = '#fef9c3';
-                    textColor = '#854d0e';
-                } else {
-                    icon = '⚠';
-                    bgColor = '#fee2e2';
-                    textColor = '#991b1b';
-                }
-                
-                insightsHTML += `
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 16px; background: ${bgColor}; border-radius: 12px;">
-                        <span style="font-size: 18px; color: ${textColor};">${icon}</span>
-                        <span style="color: ${textColor}; font-weight: 500;">${insight.text}</span>
-                    </div>
-                `;
-            });
-            insightsHTML += '</div>';
-            
-            document.getElementById('summaryInsights').innerHTML = insightsHTML;
             
             // Create sparkline cards
             createSparklineCards(businessData, margin, breakevenRoas);

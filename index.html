@@ -3451,13 +3451,17 @@
             });
         }
         
-        // Auto-load CSV on page load
+        // Google Sheets URLs
+        const BUSINESS_DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6dYqolpHjysDgyQI7UYrKYEJEog98I4NCq2aG3Fe2usi0qlW4mbgFIHbwJELmULqem_a3KRz_Zwkz/pub?gid=1335261744&single=true&output=csv';
+        const AD_CAMPAIGN_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6dYqolpHjysDgyQI7UYrKYEJEog98I4NCq2aG3Fe2usi0qlW4mbgFIHbwJELmULqem_a3KRz_Zwkz/pub?gid=1207586321&single=true&output=csv';
+
+        // Auto-load from Google Sheets
         function autoLoadBusinessData() {
-            fetch('All_Business_Data_for_Dashboard.csv')
+            fetch(BUSINESS_DATA_URL)
                 .then(response => {
                     if (!response.ok) {
-                        console.log('No default business CSV found, showing upload screen');
-                        return;
+                        console.log('Failed to fetch Google Sheet, trying local CSV');
+                        return fetch('All_Business_Data_for_Dashboard.csv').then(r => r.text());
                     }
                     return response.text();
                 })
@@ -3471,27 +3475,42 @@
                                     // Hide upload section and show dashboard
                                     document.getElementById('businessUploadSection').style.display = 'none';
                                     updateBusinessDashboard();
-                                    console.log('Auto-loaded business data from CSV');
+                                    console.log('Auto-loaded business data from Google Sheets');
                                 }
                             },
                             error: function(error) {
-                                console.error('Error parsing auto-loaded CSV:', error);
+                                console.error('Error parsing CSV:', error);
                             }
                         });
                     }
                 })
                 .catch(error => {
-                    console.log('Business CSV auto-load failed (this is ok if manually uploading):', error);
+                    console.log('Google Sheets load failed, trying local CSV:', error);
+                    // Fallback to local CSV
+                    fetch('All_Business_Data_for_Dashboard.csv')
+                        .then(r => r.text())
+                        .then(csvText => {
+                            Papa.parse(csvText, {
+                                header: true,
+                                complete: function(results) {
+                                    businessData = parseBusinessData(results.data);
+                                    if (businessData.length > 0) {
+                                        document.getElementById('businessUploadSection').style.display = 'none';
+                                        updateBusinessDashboard();
+                                    }
+                                }
+                            });
+                        });
                 });
         }
         
-        // Auto-load combined Ad Campaign data
+        // Auto-load combined Ad Campaign data from Google Sheets
         function autoLoadCampaignData() {
-            fetch('Ad_Campaign_Data.csv')
+            fetch(AD_CAMPAIGN_URL)
                 .then(response => {
                     if (!response.ok) {
-                        console.log('No default Ad Campaign CSV found');
-                        return;
+                        console.log('Failed to fetch Google Sheet, trying local CSV');
+                        return fetch('Ad_Campaign_Data.csv').then(r => r.text());
                     }
                     return response.text();
                 })
@@ -3503,7 +3522,7 @@
                                 const parsed = parseCombinedCampaignData(results.data);
                                 metaData = parsed.metaData;
                                 googleData = parsed.googleData;
-                                console.log('Auto-loaded combined Ad Campaign data');
+                                console.log('Auto-loaded Ad Campaign data from Google Sheets');
                                 if (metaData && googleData) {
                                     document.getElementById('campaignUploadSection').style.display = 'none';
                                     updateCampaignDashboard();
@@ -3516,7 +3535,24 @@
                     }
                 })
                 .catch(error => {
-                    console.log('Ad Campaign CSV auto-load failed:', error);
+                    console.log('Google Sheets load failed, trying local CSV:', error);
+                    // Fallback to local CSV
+                    fetch('Ad_Campaign_Data.csv')
+                        .then(r => r.text())
+                        .then(csvText => {
+                            Papa.parse(csvText, {
+                                header: true,
+                                complete: function(results) {
+                                    const parsed = parseCombinedCampaignData(results.data);
+                                    metaData = parsed.metaData;
+                                    googleData = parsed.googleData;
+                                    if (metaData && googleData) {
+                                        document.getElementById('campaignUploadSection').style.display = 'none';
+                                        updateCampaignDashboard();
+                                    }
+                                }
+                            });
+                        });
                 });
         }
         

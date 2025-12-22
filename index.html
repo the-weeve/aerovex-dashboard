@@ -667,7 +667,7 @@
         
         .profit-card-total {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .profit-card-total-label {
@@ -676,7 +676,7 @@
         }
         
         .profit-card-total-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             color: #1a1d29;
         }
@@ -1984,10 +1984,14 @@
                 </div>
                 
                 <div class="profit-card">
-                    <div class="profit-card-title">Profit Breakdown</div>
+                    <div class="profit-card-title">Breakdown</div>
+                    <div class="profit-card-total" style="margin-bottom: 12px;">
+                        <div class="profit-card-total-label">Total Revenue</div>
+                        <div class="profit-card-total-value">${formatCurrency(metrics.total.revenue)}</div>
+                    </div>
                     <div class="profit-card-total">
                         <div class="profit-card-total-label">Total Profit</div>
-                        <div class="profit-card-total-value">${formatCurrency(totalProfit)}</div>
+                        <div class="profit-card-total-value" style="color: #10b981;">${formatCurrency(totalProfit)}</div>
                     </div>
                     <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
                         <div class="profit-item-header">

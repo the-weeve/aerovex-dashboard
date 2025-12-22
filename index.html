@@ -605,7 +605,15 @@
         }
         
         .platform-grid {
+            display: flex;
+            gap: 24px;
             margin-bottom: 32px;
+        }
+        
+        @media (max-width: 900px) {
+            .platform-grid {
+                flex-direction: column;
+            }
         }
         
         .butterfly-card {
@@ -614,6 +622,7 @@
             border-radius: 16px;
             padding: 24px;
             transition: all 0.3s ease;
+            flex: 1;
         }
         
         body.dark-mode .butterfly-card {
@@ -624,6 +633,109 @@
         .butterfly-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profit-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        body.dark-mode .profit-card {
+            background: #1f2937;
+            border-color: #374151;
+        }
+        
+        .profit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profit-card-title {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .profit-card-total {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .profit-card-total-label {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .profit-card-total-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1d29;
+        }
+        
+        body.dark-mode .profit-card-total-value {
+            color: #f9fafb;
+        }
+        
+        .profit-item {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .profit-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .profit-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profit-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .profit-item-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .profit-item-name {
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        body.dark-mode .profit-item-name {
+            color: #e5e7eb;
+        }
+        
+        .profit-item-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1d29;
+        }
+        
+        body.dark-mode .profit-item-value {
+            color: #f9fafb;
+        }
+        
+        .profit-item-percent {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
         }
         
         .butterfly-header {
@@ -1792,6 +1904,9 @@
             // Calculate profit values
             const metaProfit = (metrics.meta.revenue * metrics.margin) - metrics.meta.spend;
             const googleProfit = (metrics.google.revenue * metrics.margin) - metrics.google.spend;
+            const totalProfit = metaProfit + googleProfit;
+            const metaProfitPct = totalProfit > 0 ? (metaProfit / totalProfit) * 100 : 50;
+            const googleProfitPct = totalProfit > 0 ? (googleProfit / totalProfit) * 100 : 50;
             
             // Calculate ROAS
             const metaRoas = metrics.meta.spend > 0 ? metrics.meta.revenue / metrics.meta.spend : 0;
@@ -1800,10 +1915,9 @@
             // Find max values for scaling bars
             const maxSpend = Math.max(metrics.meta.spend, metrics.google.spend);
             const maxRevenue = Math.max(metrics.meta.revenue, metrics.google.revenue);
-            const maxProfit = Math.max(metaProfit, googleProfit);
             const maxRoas = Math.max(metaRoas, googleRoas);
             
-            // Platform butterfly chart
+            // Platform butterfly chart + profit card
             let platformHTML = `
                 <div class="butterfly-card">
                     <div class="butterfly-header">
@@ -1849,22 +1963,6 @@
                                 <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
                             </div>
                         </div>
-                        <!-- Profit -->
-                        <div class="butterfly-row">
-                            <div class="butterfly-bar-left">
-                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metaProfit)}</span>
-                                <div class="butterfly-track butterfly-track-left">
-                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxProfit > 0 ? (metaProfit / maxProfit) * 100 : 0}%;"></div>
-                                </div>
-                            </div>
-                            <div class="butterfly-label">Profit</div>
-                            <div class="butterfly-bar-right">
-                                <div class="butterfly-track">
-                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxProfit > 0 ? (googleProfit / maxProfit) * 100 : 0}%;"></div>
-                                </div>
-                                <span class="butterfly-value butterfly-value-right">${formatCurrency(googleProfit)}</span>
-                            </div>
-                        </div>
                         <!-- ROAS -->
                         <div class="butterfly-row">
                             <div class="butterfly-bar-left">
@@ -1881,6 +1979,34 @@
                                 <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="profit-card">
+                    <div class="profit-card-title">Profit Breakdown</div>
+                    <div class="profit-card-total">
+                        <div class="profit-card-total-label">Total Profit</div>
+                        <div class="profit-card-total-value">${formatCurrency(totalProfit)}</div>
+                    </div>
+                    <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
+                        <div class="profit-item-header">
+                            <div class="profit-item-left">
+                                <div class="profit-item-dot" style="background: #0095F6;"></div>
+                                <span class="profit-item-name">Meta</span>
+                            </div>
+                            <span class="profit-item-value">${formatCurrency(metaProfit)}</span>
+                        </div>
+                        <div class="profit-item-percent">${metaProfitPct.toFixed(0)}% of total</div>
+                    </div>
+                    <div class="profit-item" style="background: rgba(52, 168, 83, 0.08); border: 1px solid rgba(52, 168, 83, 0.2);">
+                        <div class="profit-item-header">
+                            <div class="profit-item-left">
+                                <div class="profit-item-dot" style="background: #34A853;"></div>
+                                <span class="profit-item-name">Google</span>
+                            </div>
+                            <span class="profit-item-value">${formatCurrency(googleProfit)}</span>
+                        </div>
+                        <div class="profit-item-percent">${googleProfitPct.toFixed(0)}% of total</div>
                     </div>
                 </div>
             `;

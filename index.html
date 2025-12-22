@@ -605,153 +605,133 @@
         }
         
         .platform-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
             margin-bottom: 32px;
         }
         
-        @media (max-width: 900px) {
-            .platform-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .donut-card {
+        .butterfly-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 16px;
             padding: 24px;
-            text-align: center;
             transition: all 0.3s ease;
         }
         
-        body.dark-mode .donut-card {
+        body.dark-mode .butterfly-card {
             background: #1f2937;
             border-color: #374151;
         }
         
-        .donut-card:hover {
+        .butterfly-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
         }
         
-        .donut-title {
-            font-size: 13px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 20px;
+        .butterfly-header {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .butterfly-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
             font-weight: 500;
         }
         
-        .donut-wrapper {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 0 auto 20px;
-        }
-        
-        .donut-svg {
-            transform: rotate(-90deg);
-        }
-        
-        .donut-bg {
-            fill: none;
-            stroke: #e5e7eb;
-            stroke-width: 20;
-        }
-        
-        body.dark-mode .donut-bg {
-            stroke: #374151;
-        }
-        
-        .donut-segment {
-            fill: none;
-            stroke-width: 20;
-            stroke-linecap: round;
-            transition: stroke-dasharray 0.5s ease;
-        }
-        
-        .donut-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-        
-        .donut-total-label {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-        
-        .donut-total-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1d29;
-        }
-        
-        body.dark-mode .donut-total-value {
-            color: #fff;
-        }
-        
-        .donut-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: rgba(0,0,0,0.02);
-            border-radius: 8px;
-        }
-        
-        body.dark-mode .legend-item {
-            background: rgba(255,255,255,0.03);
-        }
-        
-        .legend-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .legend-dot {
-            width: 10px;
-            height: 10px;
+        .butterfly-legend-dot {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
         }
         
-        .legend-name {
-            font-size: 13px;
-            color: #6b7280;
+        .butterfly-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
         
-        .legend-value {
+        .butterfly-row {
+            display: flex;
+            align-items: center;
+        }
+        
+        .butterfly-bar-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .butterfly-bar-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .butterfly-label {
+            width: 80px;
+            text-align: center;
             font-size: 13px;
             font-weight: 600;
-            color: #1a1d29;
+            color: #374151;
+            padding: 0 8px;
         }
         
-        body.dark-mode .legend-value {
-            color: #fff;
+        body.dark-mode .butterfly-label {
+            color: #e5e7eb;
         }
         
-        .legend-percent {
+        .butterfly-value {
             font-size: 12px;
-            color: #9ca3af;
-            margin-left: 6px;
+            color: #6b7280;
+            min-width: 70px;
         }
         
-        .stroke-meta { stroke: #0095F6; }
-        .stroke-google { stroke: #34A853; }
-        .stroke-profit-meta { stroke: #0095F6; }
-        .stroke-profit-google { stroke: #34A853; }
+        .butterfly-value-left {
+            text-align: right;
+        }
+        
+        .butterfly-value-right {
+            text-align: left;
+        }
+        
+        .butterfly-track {
+            flex: 1;
+            max-width: 140px;
+            height: 24px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        body.dark-mode .butterfly-track {
+            background: #374151;
+        }
+        
+        .butterfly-track-left {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .butterfly-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .butterfly-fill-meta {
+            background: #0095F6;
+        }
+        
+        .butterfly-fill-google {
+            background: #34A853;
+        }
         
         table {
             width: 100%;
@@ -1809,138 +1789,96 @@
             `;
             document.getElementById('campaignMetrics').innerHTML = metricsHTML;
             
-            // Calculate percentages for donut charts
-            const metaSpendPct = metrics.total.spend > 0 ? (metrics.meta.spend / metrics.total.spend) * 100 : 0;
-            const googleSpendPct = 100 - metaSpendPct;
-            const metaRevPct = metrics.total.revenue > 0 ? (metrics.meta.revenue / metrics.total.revenue) * 100 : 0;
-            const googleRevPct = 100 - metaRevPct;
-            
+            // Calculate profit values
             const metaProfit = (metrics.meta.revenue * metrics.margin) - metrics.meta.spend;
             const googleProfit = (metrics.google.revenue * metrics.margin) - metrics.google.spend;
-            const totalProfit = metaProfit + googleProfit;
-            const metaProfitPct = totalProfit > 0 ? (metaProfit / totalProfit) * 100 : 50;
-            const googleProfitPct = 100 - metaProfitPct;
             
-            // SVG circle circumference for r=60 is ~377
-            const circumference = 377;
+            // Calculate ROAS
+            const metaRoas = metrics.meta.spend > 0 ? metrics.meta.revenue / metrics.meta.spend : 0;
+            const googleRoas = metrics.google.spend > 0 ? metrics.google.revenue / metrics.google.spend : 0;
             
-            // Platform donut charts
+            // Find max values for scaling bars
+            const maxSpend = Math.max(metrics.meta.spend, metrics.google.spend);
+            const maxRevenue = Math.max(metrics.meta.revenue, metrics.google.revenue);
+            const maxProfit = Math.max(metaProfit, googleProfit);
+            const maxRoas = Math.max(metaRoas, googleRoas);
+            
+            // Platform butterfly chart
             let platformHTML = `
-                <!-- Spend Donut -->
-                <div class="donut-card">
-                    <div class="donut-title">Where's The Money Going?</div>
-                    <div class="donut-wrapper">
-                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
-                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
-                            <circle class="donut-segment stroke-google" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleSpendPct/100)}"/>
-                            <circle class="donut-segment stroke-meta" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference * metaSpendPct/100} ${circumference}" stroke-dashoffset="0"/>
-                        </svg>
-                        <div class="donut-center">
-                            <div class="donut-total-label">Total Spend</div>
-                            <div class="donut-total-value">${formatCurrency(metrics.total.spend)}</div>
+                <div class="butterfly-card">
+                    <div class="butterfly-header">
+                        <div class="butterfly-legend">
+                            <div class="butterfly-legend-dot" style="background: #0095F6;"></div>
+                            <span>Meta</span>
+                        </div>
+                        <div class="butterfly-legend">
+                            <div class="butterfly-legend-dot" style="background: #34A853;"></div>
+                            <span>Google</span>
                         </div>
                     </div>
-                    <div class="donut-legend">
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #0095F6;"></div>
-                                <span class="legend-name">Meta</span>
+                    <div class="butterfly-rows">
+                        <!-- Ad Spend -->
+                        <div class="butterfly-row">
+                            <div class="butterfly-bar-left">
+                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.spend)}</span>
+                                <div class="butterfly-track butterfly-track-left">
+                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxSpend > 0 ? (metrics.meta.spend / maxSpend) * 100 : 0}%;"></div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(metrics.meta.spend)}</span>
-                                <span class="legend-percent">${metaSpendPct.toFixed(0)}%</span>
-                            </div>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #34A853;"></div>
-                                <span class="legend-name">Google</span>
-                            </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(metrics.google.spend)}</span>
-                                <span class="legend-percent">${googleSpendPct.toFixed(0)}%</span>
+                            <div class="butterfly-label">Ad Spend</div>
+                            <div class="butterfly-bar-right">
+                                <div class="butterfly-track">
+                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxSpend > 0 ? (metrics.google.spend / maxSpend) * 100 : 0}%;"></div>
+                                </div>
+                                <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.spend)}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Revenue Donut -->
-                <div class="donut-card">
-                    <div class="donut-title">Where's It Coming From?</div>
-                    <div class="donut-wrapper">
-                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
-                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
-                            <circle class="donut-segment stroke-google" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleRevPct/100)}"/>
-                            <circle class="donut-segment stroke-meta" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference * metaRevPct/100} ${circumference}" stroke-dashoffset="0"/>
-                        </svg>
-                        <div class="donut-center">
-                            <div class="donut-total-label">Total Revenue</div>
-                            <div class="donut-total-value">${formatCurrency(metrics.total.revenue)}</div>
-                        </div>
-                    </div>
-                    <div class="donut-legend">
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #0095F6;"></div>
-                                <span class="legend-name">Meta</span>
+                        <!-- Revenue -->
+                        <div class="butterfly-row">
+                            <div class="butterfly-bar-left">
+                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.revenue)}</span>
+                                <div class="butterfly-track butterfly-track-left">
+                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRevenue > 0 ? (metrics.meta.revenue / maxRevenue) * 100 : 0}%;"></div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(metrics.meta.revenue)}</span>
-                                <span class="legend-percent">${metaRevPct.toFixed(0)}%</span>
+                            <div class="butterfly-label">Revenue</div>
+                            <div class="butterfly-bar-right">
+                                <div class="butterfly-track">
+                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRevenue > 0 ? (metrics.google.revenue / maxRevenue) * 100 : 0}%;"></div>
+                                </div>
+                                <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #34A853;"></div>
-                                <span class="legend-name">Google</span>
+                        <!-- Profit -->
+                        <div class="butterfly-row">
+                            <div class="butterfly-bar-left">
+                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metaProfit)}</span>
+                                <div class="butterfly-track butterfly-track-left">
+                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxProfit > 0 ? (metaProfit / maxProfit) * 100 : 0}%;"></div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(metrics.google.revenue)}</span>
-                                <span class="legend-percent">${googleRevPct.toFixed(0)}%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Profit Donut -->
-                <div class="donut-card">
-                    <div class="donut-title">Who's More Profitable?</div>
-                    <div class="donut-wrapper">
-                        <svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">
-                            <circle class="donut-bg" cx="80" cy="80" r="60"/>
-                            <circle class="donut-segment stroke-profit-google" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference}" stroke-dashoffset="${circumference * (1 - googleProfitPct/100)}"/>
-                            <circle class="donut-segment stroke-profit-meta" cx="80" cy="80" r="60" 
-                                    stroke-dasharray="${circumference * metaProfitPct/100} ${circumference}" stroke-dashoffset="0"/>
-                        </svg>
-                        <div class="donut-center">
-                            <div class="donut-total-label">Total Profit</div>
-                            <div class="donut-total-value">${formatCurrency(totalProfit)}</div>
-                        </div>
-                    </div>
-                    <div class="donut-legend">
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #0095F6;"></div>
-                                <span class="legend-name">Meta</span>
-                            </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(metaProfit)}</span>
-                                <span class="legend-percent">${metaProfitPct.toFixed(0)}%</span>
+                            <div class="butterfly-label">Profit</div>
+                            <div class="butterfly-bar-right">
+                                <div class="butterfly-track">
+                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxProfit > 0 ? (googleProfit / maxProfit) * 100 : 0}%;"></div>
+                                </div>
+                                <span class="butterfly-value butterfly-value-right">${formatCurrency(googleProfit)}</span>
                             </div>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-left">
-                                <div class="legend-dot" style="background: #34A853;"></div>
-                                <span class="legend-name">Google</span>
+                        <!-- ROAS -->
+                        <div class="butterfly-row">
+                            <div class="butterfly-bar-left">
+                                <span class="butterfly-value butterfly-value-left">${metaRoas.toFixed(2)}x</span>
+                                <div class="butterfly-track butterfly-track-left">
+                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRoas > 0 ? (metaRoas / maxRoas) * 100 : 0}%;"></div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="legend-value">${formatCurrency(googleProfit)}</span>
-                                <span class="legend-percent">${googleProfitPct.toFixed(0)}%</span>
+                            <div class="butterfly-label">ROAS</div>
+                            <div class="butterfly-bar-right">
+                                <div class="butterfly-track">
+                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRoas > 0 ? (googleRoas / maxRoas) * 100 : 0}%;"></div>
+                                </div>
+                                <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
                             </div>
                         </div>
                     </div>

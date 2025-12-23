@@ -1837,6 +1837,10 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             if (tabName === 'campaigns') {
                 document.getElementById('campaignsTab').classList.add('active');
+                // Render recovered cart revenue if business data is available
+                if (businessData) {
+                    renderRecoveredCartRevenue();
+                }
             } else if (tabName === 'business') {
                 document.getElementById('businessTab').classList.add('active');
             } else if (tabName === 'trends') {
@@ -2972,6 +2976,9 @@
             `;
             
             createBusinessCharts();
+            
+            // Also render recovered cart revenue for campaigns tab
+            renderRecoveredCartRevenue();
         }
         
         function createBusinessCharts() {

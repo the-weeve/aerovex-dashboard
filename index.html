@@ -846,6 +846,137 @@
             background: #34A853;
         }
         
+        /* Scorecard Styles */
+        .scorecard {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        body.dark-mode .scorecard {
+            background: #1f2937;
+            border-color: #374151;
+        }
+        
+        .scorecard-header {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 40px;
+        }
+        
+        .scorecard-platform {
+            text-align: center;
+        }
+        
+        .scorecard-platform-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        body.dark-mode .scorecard-platform-name {
+            color: #f9fafb;
+        }
+        
+        .scorecard-grade {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            margin-top: 12px;
+        }
+        
+        .grade-a {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .grade-b {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        
+        .grade-c {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .scorecard-rating {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .rating-excellent {
+            color: #10b981;
+        }
+        
+        .rating-great {
+            color: #3b82f6;
+        }
+        
+        .rating-good {
+            color: #f59e0b;
+        }
+        
+        .scorecard-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .scorecard-metric {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+        }
+        
+        body.dark-mode .scorecard-metric {
+            background: #374151;
+        }
+        
+        .scorecard-metric-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        body.dark-mode .scorecard-metric-label {
+            color: #9ca3af;
+        }
+        
+        .scorecard-metric-values {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .scorecard-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .scorecard-value-meta {
+            color: #0095F6;
+        }
+        
+        .scorecard-value-google {
+            color: #34A853;
+        }
+        
+        .scorecard-vs {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+        
         /* Recovered Cart Revenue Styles */
         .cart-revenue-section {
             background: #ffffff;
@@ -1521,25 +1652,9 @@
                 <div class="metrics-grid" id="campaignMetrics"></div>
                 
                 <h2 class="section-title">Platform Comparison</h2>
-                <div class="platform-grid">
-                    <div class="butterfly-card">
-                        <div class="butterfly-header">
-                            <div class="butterfly-legend">
-                                <div class="butterfly-legend-dot butterfly-fill-meta"></div>
-                                <span>Meta</span>
-                            </div>
-                            <div class="butterfly-legend">
-                                <div class="butterfly-legend-dot butterfly-fill-google"></div>
-                                <span>Google</span>
-                            </div>
-                        </div>
-                        <div class="butterfly-rows" id="butterflyChartRows"></div>
-                    </div>
-                    
-                    <div class="profit-card">
-                        <div class="profit-card-title">AD BREAKDOWN</div>
-                        <div id="profitCardContent"></div>
-                    </div>
+                <div class="scorecard" id="platformScorecard">
+                    <div class="scorecard-header" id="scorecardHeader"></div>
+                    <div class="scorecard-metrics" id="scorecardMetrics"></div>
                 </div>
                 
                 <!-- Top Performing Campaigns -->
@@ -2183,96 +2298,75 @@
             const metaRoas = metrics.meta.spend > 0 ? metrics.meta.revenue / metrics.meta.spend : 0;
             const googleRoas = metrics.google.spend > 0 ? metrics.google.revenue / metrics.google.spend : 0;
             
-            // Find max values for scaling bars
-            const maxSpend = Math.max(metrics.meta.spend, metrics.google.spend);
-            const maxRevenue = Math.max(metrics.meta.revenue, metrics.google.revenue);
-            const maxRoas = Math.max(metaRoas, googleRoas);
+            // Calculate grades based on ROAS vs breakeven
+            const metaGrade = metaRoas >= metrics.breakevenRoas * 2 ? 'A' : metaRoas >= metrics.breakevenRoas * 1.5 ? 'B+' : metaRoas >= metrics.breakevenRoas * 1.2 ? 'B' : 'C';
+            const googleGrade = googleRoas >= metrics.breakevenRoas * 2 ? 'A' : googleRoas >= metrics.breakevenRoas * 1.5 ? 'B+' : googleRoas >= metrics.breakevenRoas * 1.2 ? 'B' : 'C';
+            const metaRating = metaRoas >= metrics.breakevenRoas * 2 ? 'EXCELLENT' : metaRoas >= metrics.breakevenRoas * 1.5 ? 'GREAT' : metaRoas >= metrics.breakevenRoas * 1.2 ? 'GOOD' : 'NEEDS WORK';
+            const googleRating = googleRoas >= metrics.breakevenRoas * 2 ? 'EXCELLENT' : googleRoas >= metrics.breakevenRoas * 1.5 ? 'GREAT' : googleRoas >= metrics.breakevenRoas * 1.2 ? 'GOOD' : 'NEEDS WORK';
+            const metaGradeClass = metaGrade === 'A' ? 'grade-a' : metaGrade.startsWith('B') ? 'grade-b' : 'grade-c';
+            const googleGradeClass = googleGrade === 'A' ? 'grade-a' : googleGrade.startsWith('B') ? 'grade-b' : 'grade-c';
+            const metaRatingClass = metaRating === 'EXCELLENT' ? 'rating-excellent' : metaRating === 'GREAT' ? 'rating-great' : 'rating-good';
+            const googleRatingClass = googleRating === 'EXCELLENT' ? 'rating-excellent' : googleRating === 'GREAT' ? 'rating-great' : 'rating-good';
             
-            // Butterfly chart rows
-            let butterflyHTML = `
-                <!-- Ad Spend -->
-                <div class="butterfly-row">
-                    <div class="butterfly-bar-left">
-                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.spend)}</span>
-                        <div class="butterfly-track butterfly-track-left">
-                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxSpend > 0 ? (metrics.meta.spend / maxSpend) * 100 : 0}%;"></div>
-                        </div>
-                    </div>
-                    <div class="butterfly-label">Ad Spend</div>
-                    <div class="butterfly-bar-right">
-                        <div class="butterfly-track">
-                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxSpend > 0 ? (metrics.google.spend / maxSpend) * 100 : 0}%;"></div>
-                        </div>
-                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.spend)}</span>
+            // Scorecard header
+            let scorecardHeaderHTML = `
+                <div class="scorecard-platform">
+                    <div class="scorecard-platform-name" style="color: #0095F6;">Meta</div>
+                    <div class="scorecard-grade ${metaGradeClass}">${metaGrade}</div>
+                    <div class="scorecard-rating ${metaRatingClass}">${metaRating}</div>
+                </div>
+                <div class="scorecard-platform">
+                    <div class="scorecard-platform-name" style="color: #34A853;">Google</div>
+                    <div class="scorecard-grade ${googleGradeClass}">${googleGrade}</div>
+                    <div class="scorecard-rating ${googleRatingClass}">${googleRating}</div>
+                </div>
+            `;
+            document.getElementById('scorecardHeader').innerHTML = scorecardHeaderHTML;
+            
+            // Scorecard metrics
+            let scorecardMetricsHTML = `
+                <div class="scorecard-metric">
+                    <div class="scorecard-metric-label">Ad Spend</div>
+                    <div class="scorecard-metric-values">
+                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metrics.meta.spend)}</div>
+                        <div class="scorecard-vs">vs</div>
+                        <div class="scorecard-value scorecard-value-google">${formatCurrency(metrics.google.spend)}</div>
                     </div>
                 </div>
-                <!-- Revenue -->
-                <div class="butterfly-row">
-                    <div class="butterfly-bar-left">
-                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.revenue)}</span>
-                        <div class="butterfly-track butterfly-track-left">
-                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRevenue > 0 ? (metrics.meta.revenue / maxRevenue) * 100 : 0}%;"></div>
-                        </div>
-                    </div>
-                    <div class="butterfly-label">Revenue</div>
-                    <div class="butterfly-bar-right">
-                        <div class="butterfly-track">
-                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRevenue > 0 ? (metrics.google.revenue / maxRevenue) * 100 : 0}%;"></div>
-                        </div>
-                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
+                <div class="scorecard-metric">
+                    <div class="scorecard-metric-label">Revenue</div>
+                    <div class="scorecard-metric-values">
+                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metrics.meta.revenue)}</div>
+                        <div class="scorecard-vs">vs</div>
+                        <div class="scorecard-value scorecard-value-google">${formatCurrency(metrics.google.revenue)}</div>
                     </div>
                 </div>
-                <!-- ROAS -->
-                <div class="butterfly-row">
-                    <div class="butterfly-bar-left">
-                        <span class="butterfly-value butterfly-value-left">${metaRoas.toFixed(2)}x</span>
-                        <div class="butterfly-track butterfly-track-left">
-                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRoas > 0 ? (metaRoas / maxRoas) * 100 : 0}%;"></div>
-                        </div>
+                <div class="scorecard-metric">
+                    <div class="scorecard-metric-label">ROAS</div>
+                    <div class="scorecard-metric-values">
+                        <div class="scorecard-value scorecard-value-meta">${metaRoas.toFixed(2)}x</div>
+                        <div class="scorecard-vs">vs</div>
+                        <div class="scorecard-value scorecard-value-google">${googleRoas.toFixed(2)}x</div>
                     </div>
-                    <div class="butterfly-label">ROAS</div>
-                    <div class="butterfly-bar-right">
-                        <div class="butterfly-track">
-                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRoas > 0 ? (googleRoas / maxRoas) * 100 : 0}%;"></div>
-                        </div>
-                        <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
+                </div>
+                <div class="scorecard-metric">
+                    <div class="scorecard-metric-label">Profit</div>
+                    <div class="scorecard-metric-values">
+                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metaProfit)}</div>
+                        <div class="scorecard-vs">vs</div>
+                        <div class="scorecard-value scorecard-value-google">${formatCurrency(googleProfit)}</div>
+                    </div>
+                </div>
+                <div class="scorecard-metric">
+                    <div class="scorecard-metric-label">Clicks</div>
+                    <div class="scorecard-metric-values">
+                        <div class="scorecard-value scorecard-value-meta">${metrics.meta.clicks.toLocaleString()}</div>
+                        <div class="scorecard-vs">vs</div>
+                        <div class="scorecard-value scorecard-value-google">${metrics.google.clicks.toLocaleString()}</div>
                     </div>
                 </div>
             `;
-            document.getElementById('butterflyChartRows').innerHTML = butterflyHTML;
-            
-            // Profit card content
-            let profitHTML = `
-                <div class="profit-card-total" style="margin-bottom: 12px;">
-                    <div class="profit-card-total-label">Total Revenue</div>
-                    <div class="profit-card-total-value">${formatCurrency(metrics.total.revenue)}</div>
-                </div>
-                <div class="profit-card-total">
-                    <div class="profit-card-total-label">Total Profit</div>
-                    <div class="profit-card-total-value" style="color: #10b981;">${formatCurrency(totalProfit)}</div>
-                </div>
-                <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
-                    <div class="profit-item-header">
-                        <div class="profit-item-left">
-                            <div class="profit-item-dot" style="background: #0095F6;"></div>
-                            <span class="profit-item-name">Meta</span>
-                        </div>
-                        <span class="profit-item-value">${formatCurrency(metaProfit)}</span>
-                    </div>
-                    <div class="profit-item-percent">${metaProfitPct.toFixed(0)}% of total</div>
-                </div>
-                <div class="profit-item" style="background: rgba(52, 168, 83, 0.08); border: 1px solid rgba(52, 168, 83, 0.2);">
-                    <div class="profit-item-header">
-                        <div class="profit-item-left">
-                            <div class="profit-item-dot" style="background: #34A853;"></div>
-                            <span class="profit-item-name">Google</span>
-                        </div>
-                        <span class="profit-item-value">${formatCurrency(googleProfit)}</span>
-                    </div>
-                    <div class="profit-item-percent">${googleProfitPct.toFixed(0)}% of total</div>
-                </div>
-            `;
-            document.getElementById('profitCardContent').innerHTML = profitHTML;
+            document.getElementById('scorecardMetrics').innerHTML = scorecardMetricsHTML;
             
             // Campaign table
             const allCampaigns = [

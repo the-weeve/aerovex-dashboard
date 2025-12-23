@@ -2232,10 +2232,12 @@
             
             const metaSpend = metaData.campaigns.reduce((sum, c) => sum + c.spend, 0);
             const metaRevenue = metaData.campaigns.reduce((sum, c) => sum + c.revenue, 0);
+            const metaClicks = metaData.campaigns.reduce((sum, c) => sum + c.clicks, 0);
             const metaRoas = metaSpend > 0 ? metaRevenue / metaSpend : 0;
             
             const googleSpend = googleData.campaigns.reduce((sum, c) => sum + c.spend, 0);
             const googleRevenue = googleData.campaigns.reduce((sum, c) => sum + c.revenue, 0);
+            const googleClicks = googleData.campaigns.reduce((sum, c) => sum + c.clicks, 0);
             const googleRoas = googleSpend > 0 ? googleRevenue / googleSpend : 0;
             
             const startDate = new Date(metaData.startDate);
@@ -2244,8 +2246,8 @@
             
             return {
                 total: { spend: totalSpend, revenue: totalRevenue, roas, grossProfit, netProfit, clicks: totalClicks, purchases: totalPurchases },
-                meta: { spend: metaSpend, revenue: metaRevenue, roas: metaRoas },
-                google: { spend: googleSpend, revenue: googleRevenue, roas: googleRoas },
+                meta: { spend: metaSpend, revenue: metaRevenue, roas: metaRoas, clicks: metaClicks },
+                google: { spend: googleSpend, revenue: googleRevenue, roas: googleRoas, clicks: googleClicks },
                 breakevenRoas,
                 margin,
                 days,
@@ -2372,15 +2374,7 @@
                     </div>
                 </div>
             `;
-            console.log('Setting scorecard metrics HTML:', scorecardMetricsHTML);
-            const metricsElement = document.getElementById('scorecardMetrics');
-            console.log('Metrics element found:', metricsElement);
-            if (metricsElement) {
-                metricsElement.innerHTML = scorecardMetricsHTML;
-                console.log('Metrics HTML set successfully');
-            } else {
-                console.error('scorecardMetrics element not found!');
-            }
+            document.getElementById('scorecardMetrics').innerHTML = scorecardMetricsHTML;
             
             // Campaign table
             const allCampaigns = [

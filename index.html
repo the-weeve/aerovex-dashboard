@@ -846,6 +846,182 @@
             background: #34A853;
         }
         
+        /* Recovered Cart Revenue Styles */
+        .cart-revenue-section {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+        
+        body.dark-mode .cart-revenue-section {
+            background: #1f2937;
+            border-color: #374151;
+        }
+        
+        .cart-revenue-chart-container {
+            position: relative;
+            height: 280px;
+            margin-top: 24px;
+        }
+        
+        .cart-y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 30px;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-right: 12px;
+        }
+        
+        .cart-y-label {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        
+        .cart-chart-area {
+            position: absolute;
+            left: 60px;
+            right: 0;
+            top: 0;
+            bottom: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 0 16px;
+        }
+        
+        .cart-grid {
+            position: absolute;
+            left: 60px;
+            right: 0;
+            top: 0;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .cart-grid-line {
+            height: 1px;
+            background: #f3f4f6;
+        }
+        
+        body.dark-mode .cart-grid-line {
+            background: #374151;
+        }
+        
+        .cart-bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        
+        .cart-bar {
+            width: 100%;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .cart-bar:hover {
+            background: linear-gradient(to top, #2563eb, #3b82f6);
+            transform: scaleY(1.02);
+        }
+        
+        .cart-bar-value {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
+        
+        body.dark-mode .cart-bar-value {
+            color: #e5e7eb;
+        }
+        
+        .cart-x-axis {
+            position: absolute;
+            left: 60px;
+            right: 0;
+            bottom: 0;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+        }
+        
+        .cart-x-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        body.dark-mode .cart-x-label {
+            color: #9ca3af;
+        }
+        
+        .cart-summary-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        body.dark-mode .cart-summary-stats {
+            border-top-color: #374151;
+        }
+        
+        .cart-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .cart-stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        body.dark-mode .cart-stat-label {
+            color: #9ca3af;
+        }
+        
+        .cart-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1d29;
+        }
+        
+        body.dark-mode .cart-stat-value {
+            color: #f9fafb;
+        }
+        
+        .cart-stat-trend {
+            font-size: 13px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -1344,7 +1520,58 @@
                 <div class="metrics-grid" id="campaignMetrics"></div>
                 
                 <h2 class="section-title">Platform Comparison</h2>
-                <div class="platform-grid" id="platformMetrics"></div>
+                <div class="platform-grid">
+                    <div class="butterfly-card">
+                        <div class="butterfly-header">
+                            <div class="butterfly-legend">
+                                <div class="butterfly-legend-dot butterfly-fill-meta"></div>
+                                <span>Meta</span>
+                            </div>
+                            <div class="butterfly-legend">
+                                <div class="butterfly-legend-dot butterfly-fill-google"></div>
+                                <span>Google</span>
+                            </div>
+                        </div>
+                        <div class="butterfly-rows" id="butterflyChartRows"></div>
+                    </div>
+                    
+                    <div class="profit-card">
+                        <div class="profit-card-title">AD BREAKDOWN</div>
+                        <div id="profitCardContent"></div>
+                    </div>
+                </div>
+                
+                <!-- Recovered Cart Revenue Section -->
+                <div class="cart-revenue-section">
+                    <h2 class="section-title">Recovered Cart Revenue</h2>
+                    <div class="cart-revenue-chart-container">
+                        <div class="cart-grid">
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                        </div>
+                        <div class="cart-y-axis" id="cartYAxis"></div>
+                        <div class="cart-chart-area" id="cartChartArea"></div>
+                        <div class="cart-x-axis" id="cartXAxis"></div>
+                    </div>
+                    <div class="cart-summary-stats">
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Total Recovered</div>
+                            <div class="cart-stat-value" id="totalRecovered">$0</div>
+                        </div>
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Average Monthly</div>
+                            <div class="cart-stat-value" id="avgMonthly">$0</div>
+                        </div>
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Peak Month</div>
+                            <div class="cart-stat-value" id="peakMonth">$0</div>
+                            <div class="cart-stat-trend" id="peakMonthName"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="chart-section">
                     <h2>Campaign Performance Map</h2>
@@ -1918,104 +2145,91 @@
             const maxRevenue = Math.max(metrics.meta.revenue, metrics.google.revenue);
             const maxRoas = Math.max(metaRoas, googleRoas);
             
-            // Platform butterfly chart + profit card
-            let platformHTML = `
-                <div class="butterfly-card">
-                    <div class="butterfly-header">
-                        <div class="butterfly-legend">
-                            <div class="butterfly-legend-dot" style="background: #0095F6;"></div>
-                            <span>Meta</span>
-                        </div>
-                        <div class="butterfly-legend">
-                            <div class="butterfly-legend-dot" style="background: #34A853;"></div>
-                            <span>Google</span>
+            // Butterfly chart rows
+            let butterflyHTML = `
+                <!-- Ad Spend -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.spend)}</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxSpend > 0 ? (metrics.meta.spend / maxSpend) * 100 : 0}%;"></div>
                         </div>
                     </div>
-                    <div class="butterfly-rows">
-                        <!-- Ad Spend -->
-                        <div class="butterfly-row">
-                            <div class="butterfly-bar-left">
-                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.spend)}</span>
-                                <div class="butterfly-track butterfly-track-left">
-                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxSpend > 0 ? (metrics.meta.spend / maxSpend) * 100 : 0}%;"></div>
-                                </div>
-                            </div>
-                            <div class="butterfly-label">Ad Spend</div>
-                            <div class="butterfly-bar-right">
-                                <div class="butterfly-track">
-                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxSpend > 0 ? (metrics.google.spend / maxSpend) * 100 : 0}%;"></div>
-                                </div>
-                                <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.spend)}</span>
-                            </div>
+                    <div class="butterfly-label">Ad Spend</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxSpend > 0 ? (metrics.google.spend / maxSpend) * 100 : 0}%;"></div>
                         </div>
-                        <!-- Revenue -->
-                        <div class="butterfly-row">
-                            <div class="butterfly-bar-left">
-                                <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.revenue)}</span>
-                                <div class="butterfly-track butterfly-track-left">
-                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRevenue > 0 ? (metrics.meta.revenue / maxRevenue) * 100 : 0}%;"></div>
-                                </div>
-                            </div>
-                            <div class="butterfly-label">Revenue</div>
-                            <div class="butterfly-bar-right">
-                                <div class="butterfly-track">
-                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRevenue > 0 ? (metrics.google.revenue / maxRevenue) * 100 : 0}%;"></div>
-                                </div>
-                                <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
-                            </div>
-                        </div>
-                        <!-- ROAS -->
-                        <div class="butterfly-row">
-                            <div class="butterfly-bar-left">
-                                <span class="butterfly-value butterfly-value-left">${metaRoas.toFixed(2)}x</span>
-                                <div class="butterfly-track butterfly-track-left">
-                                    <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRoas > 0 ? (metaRoas / maxRoas) * 100 : 0}%;"></div>
-                                </div>
-                            </div>
-                            <div class="butterfly-label">ROAS</div>
-                            <div class="butterfly-bar-right">
-                                <div class="butterfly-track">
-                                    <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRoas > 0 ? (googleRoas / maxRoas) * 100 : 0}%;"></div>
-                                </div>
-                                <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
-                            </div>
-                        </div>
+                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.spend)}</span>
                     </div>
                 </div>
-                
-                <div class="profit-card">
-                    <div class="profit-card-title">Ad Breakdown</div>
-                    <div class="profit-card-total" style="margin-bottom: 12px;">
-                        <div class="profit-card-total-label">Total Revenue</div>
-                        <div class="profit-card-total-value">${formatCurrency(metrics.total.revenue)}</div>
-                    </div>
-                    <div class="profit-card-total">
-                        <div class="profit-card-total-label">Total Profit</div>
-                        <div class="profit-card-total-value" style="color: #10b981;">${formatCurrency(totalProfit)}</div>
-                    </div>
-                    <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
-                        <div class="profit-item-header">
-                            <div class="profit-item-left">
-                                <div class="profit-item-dot" style="background: #0095F6;"></div>
-                                <span class="profit-item-name">Meta</span>
-                            </div>
-                            <span class="profit-item-value">${formatCurrency(metaProfit)}</span>
+                <!-- Revenue -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.revenue)}</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRevenue > 0 ? (metrics.meta.revenue / maxRevenue) * 100 : 0}%;"></div>
                         </div>
-                        <div class="profit-item-percent">${metaProfitPct.toFixed(0)}% of total</div>
                     </div>
-                    <div class="profit-item" style="background: rgba(52, 168, 83, 0.08); border: 1px solid rgba(52, 168, 83, 0.2);">
-                        <div class="profit-item-header">
-                            <div class="profit-item-left">
-                                <div class="profit-item-dot" style="background: #34A853;"></div>
-                                <span class="profit-item-name">Google</span>
-                            </div>
-                            <span class="profit-item-value">${formatCurrency(googleProfit)}</span>
+                    <div class="butterfly-label">Revenue</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRevenue > 0 ? (metrics.google.revenue / maxRevenue) * 100 : 0}%;"></div>
                         </div>
-                        <div class="profit-item-percent">${googleProfitPct.toFixed(0)}% of total</div>
+                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
+                    </div>
+                </div>
+                <!-- ROAS -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${metaRoas.toFixed(2)}x</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRoas > 0 ? (metaRoas / maxRoas) * 100 : 0}%;"></div>
+                        </div>
+                    </div>
+                    <div class="butterfly-label">ROAS</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRoas > 0 ? (googleRoas / maxRoas) * 100 : 0}%;"></div>
+                        </div>
+                        <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
                     </div>
                 </div>
             `;
-            document.getElementById('platformMetrics').innerHTML = platformHTML;
+            document.getElementById('butterflyChartRows').innerHTML = butterflyHTML;
+            
+            // Profit card content
+            let profitHTML = `
+                <div class="profit-card-total" style="margin-bottom: 12px;">
+                    <div class="profit-card-total-label">Total Revenue</div>
+                    <div class="profit-card-total-value">${formatCurrency(metrics.total.revenue)}</div>
+                </div>
+                <div class="profit-card-total">
+                    <div class="profit-card-total-label">Total Profit</div>
+                    <div class="profit-card-total-value" style="color: #10b981;">${formatCurrency(totalProfit)}</div>
+                </div>
+                <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
+                    <div class="profit-item-header">
+                        <div class="profit-item-left">
+                            <div class="profit-item-dot" style="background: #0095F6;"></div>
+                            <span class="profit-item-name">Meta</span>
+                        </div>
+                        <span class="profit-item-value">${formatCurrency(metaProfit)}</span>
+                    </div>
+                    <div class="profit-item-percent">${metaProfitPct.toFixed(0)}% of total</div>
+                </div>
+                <div class="profit-item" style="background: rgba(52, 168, 83, 0.08); border: 1px solid rgba(52, 168, 83, 0.2);">
+                    <div class="profit-item-header">
+                        <div class="profit-item-left">
+                            <div class="profit-item-dot" style="background: #34A853;"></div>
+                            <span class="profit-item-name">Google</span>
+                        </div>
+                        <span class="profit-item-value">${formatCurrency(googleProfit)}</span>
+                    </div>
+                    <div class="profit-item-percent">${googleProfitPct.toFixed(0)}% of total</div>
+                </div>
+            `;
+            document.getElementById('profitCardContent').innerHTML = profitHTML;
             
             // Campaign table
             const allCampaigns = [
@@ -2059,6 +2273,9 @@
             
             // Charts
             createCampaignCharts();
+            
+            // Recovered cart revenue chart
+            renderRecoveredCartRevenue();
         }
         
         function createCampaignCharts() {
@@ -2457,6 +2674,72 @@
             container.innerHTML = html;
         }
         
+        function renderRecoveredCartRevenue() {
+            if (!businessData || businessData.length === 0) return;
+            
+            // Filter data to only include months with recovered cart revenue > 0
+            const cartData = businessData.filter(m => m.recoveredCartRevenue > 0);
+            
+            if (cartData.length === 0) {
+                // If no cart revenue data, hide the section
+                return;
+            }
+            
+            const maxRevenue = Math.max(...cartData.map(d => d.recoveredCartRevenue));
+            const roundedMax = Math.ceil(maxRevenue / 5000) * 5000;
+            const step = roundedMax / 4;
+            
+            // Clear previous content
+            document.getElementById('cartYAxis').innerHTML = '';
+            document.getElementById('cartChartArea').innerHTML = '';
+            document.getElementById('cartXAxis').innerHTML = '';
+            
+            // Y-axis labels
+            const yAxis = document.getElementById('cartYAxis');
+            for (let i = 0; i <= 4; i++) {
+                const label = document.createElement('div');
+                label.className = 'cart-y-label';
+                label.textContent = formatCurrency(roundedMax - (step * i));
+                yAxis.appendChild(label);
+            }
+            
+            // Bars
+            const chartArea = document.getElementById('cartChartArea');
+            cartData.forEach(data => {
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'cart-bar-wrapper';
+                
+                const heightPercent = (data.recoveredCartRevenue / roundedMax) * 100;
+                
+                barWrapper.innerHTML = `
+                    <div class="cart-bar" style="height: ${heightPercent}%;">
+                        <div class="cart-bar-value">${formatCurrency(data.recoveredCartRevenue)}</div>
+                    </div>
+                `;
+                
+                chartArea.appendChild(barWrapper);
+            });
+            
+            // X-axis labels (show just month name, not year)
+            const xAxis = document.getElementById('cartXAxis');
+            cartData.forEach(data => {
+                const label = document.createElement('div');
+                label.className = 'cart-x-label';
+                label.textContent = data.month.split(' ')[0]; // Just the month name
+                xAxis.appendChild(label);
+            });
+            
+            // Summary stats
+            const totalRecovered = cartData.reduce((sum, d) => sum + d.recoveredCartRevenue, 0);
+            const avgMonthly = totalRecovered / cartData.length;
+            const peakData = cartData.reduce((max, d) => d.recoveredCartRevenue > max.recoveredCartRevenue ? d : max);
+            
+            document.getElementById('totalRecovered').textContent = formatCurrency(totalRecovered);
+            document.getElementById('avgMonthly').textContent = formatCurrency(Math.round(avgMonthly));
+            document.getElementById('peakMonth').textContent = formatCurrency(peakData.recoveredCartRevenue);
+            document.getElementById('peakMonthName').textContent = peakData.month.split(' ')[0];
+        }
+        
         // ==========================================
         // BUSINESS OVERVIEW CODE
         // ==========================================
@@ -2514,7 +2797,8 @@
                             lucasSales: parseFloat(row['Lucas Sales']) || 0,
                             affiliateSales: parseFloat(row['Affiliate Sales']) || 0,
                             totalSales: parseFloat(row['Total Business Sales']) || 0,
-                            traffic: parseFloat(row['Website Traffic']) || 0
+                            traffic: parseFloat(row['Website Traffic']) || 0,
+                            recoveredCartRevenue: parseFloat(row['Recovered Cart Revenue']) || 0
                         });
                     }
                 }

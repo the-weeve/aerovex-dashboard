@@ -846,137 +846,6 @@
             background: #34A853;
         }
         
-        /* Scorecard Styles */
-        .scorecard {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 40px;
-            border: 1px solid #e5e7eb;
-        }
-        
-        body.dark-mode .scorecard {
-            background: #1f2937;
-            border-color: #374151;
-        }
-        
-        .scorecard-header {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 40px;
-        }
-        
-        .scorecard-platform {
-            text-align: center;
-        }
-        
-        .scorecard-platform-name {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        body.dark-mode .scorecard-platform-name {
-            color: #f9fafb;
-        }
-        
-        .scorecard-grade {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            font-weight: 700;
-            color: white;
-            margin-top: 12px;
-        }
-        
-        .grade-a {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-        
-        .grade-b {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-        
-        .grade-c {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-        
-        .scorecard-rating {
-            margin-top: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        
-        .rating-excellent {
-            color: #10b981;
-        }
-        
-        .rating-great {
-            color: #3b82f6;
-        }
-        
-        .rating-good {
-            color: #f59e0b;
-        }
-        
-        .scorecard-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-        }
-        
-        .scorecard-metric {
-            text-align: center;
-            padding: 20px;
-            background: #f9fafb;
-            border-radius: 12px;
-        }
-        
-        body.dark-mode .scorecard-metric {
-            background: #374151;
-        }
-        
-        .scorecard-metric-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        body.dark-mode .scorecard-metric-label {
-            color: #9ca3af;
-        }
-        
-        .scorecard-metric-values {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            align-items: center;
-        }
-        
-        .scorecard-value {
-            font-size: 20px;
-            font-weight: 700;
-        }
-        
-        .scorecard-value-meta {
-            color: #0095F6;
-        }
-        
-        .scorecard-value-google {
-            color: #34A853;
-        }
-        
-        .scorecard-vs {
-            font-size: 14px;
-            color: #9ca3af;
-            font-weight: 600;
-        }
-        
         /* Recovered Cart Revenue Styles */
         .cart-revenue-section {
             background: #ffffff;
@@ -1610,7 +1479,6 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('business')">Total Business Overview</div>
             <div class="tab" onclick="switchTab('campaigns')">Ad Campaign Performance</div>
-            <div class="tab" onclick="switchTab('revenue')">Revenue Breakdown</div>
             <div class="tab" onclick="switchTab('trends')">Monthly Trends</div>
             <div class="tab" onclick="switchTab('summary')">Executive Summary</div>
         </div>
@@ -1652,16 +1520,57 @@
                 <div class="metrics-grid" id="campaignMetrics"></div>
                 
                 <h2 class="section-title">Platform Comparison</h2>
-                <div class="scorecard" id="platformScorecard">
-                    <div class="scorecard-header" id="scorecardHeader"></div>
-                    <div class="scorecard-metrics" id="scorecardMetrics"></div>
+                <div class="platform-grid">
+                    <div class="butterfly-card">
+                        <div class="butterfly-header">
+                            <div class="butterfly-legend">
+                                <div class="butterfly-legend-dot butterfly-fill-meta"></div>
+                                <span>Meta</span>
+                            </div>
+                            <div class="butterfly-legend">
+                                <div class="butterfly-legend-dot butterfly-fill-google"></div>
+                                <span>Google</span>
+                            </div>
+                        </div>
+                        <div class="butterfly-rows" id="butterflyChartRows"></div>
+                    </div>
+                    
+                    <div class="profit-card">
+                        <div class="profit-card-title">AD BREAKDOWN</div>
+                        <div id="profitCardContent"></div>
+                    </div>
                 </div>
                 
-                <!-- Top Performing Campaigns -->
-                <div class="chart-section">
-                    <h2>Top Performing Campaigns</h2>
-                    <p style="color: #6b7280; margin-bottom: 24px;">Your best and worst campaigns with actionable recommendations</p>
-                    <div id="topCampaignCards"></div>
+                <!-- Recovered Cart Revenue Section -->
+                <div class="cart-revenue-section">
+                    <h2 class="section-title">Recovered Cart Revenue</h2>
+                    <div class="cart-revenue-chart-container">
+                        <div class="cart-grid">
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                            <div class="cart-grid-line"></div>
+                        </div>
+                        <div class="cart-y-axis" id="cartYAxis"></div>
+                        <div class="cart-chart-area" id="cartChartArea"></div>
+                        <div class="cart-x-axis" id="cartXAxis"></div>
+                    </div>
+                    <div class="cart-summary-stats">
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Total Recovered</div>
+                            <div class="cart-stat-value" id="totalRecovered">$0</div>
+                        </div>
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Average Monthly</div>
+                            <div class="cart-stat-value" id="avgMonthly">$0</div>
+                        </div>
+                        <div class="cart-stat">
+                            <div class="cart-stat-label">Peak Month</div>
+                            <div class="cart-stat-value" id="peakMonth">$0</div>
+                            <div class="cart-stat-trend" id="peakMonthName"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="chart-section">
@@ -1697,68 +1606,6 @@
                     <h2>Budget Allocation Recommendations</h2>
                     <p style="color: #6b7280; margin-bottom: 24px;">Based on campaign performance, here's how to optimize your budget allocation:</p>
                     <div id="budgetRecommendations"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Revenue Breakdown Tab -->
-        <div class="tab-content" id="revenueTab">
-            <div class="dashboard-content active" id="revenueDashboardContent">
-                <div class="page-header">
-                    <div class="page-header-text">
-                        <h1 class="page-title">Revenue Breakdown</h1>
-                        <p class="page-subtitle" id="revenuePageSubtitle">All revenue channels and traffic metrics</p>
-                    </div>
-                </div>
-                
-                <h2 class="section-title" id="revenueCurrentMonthTitle">Current Month Performance</h2>
-                <div class="metrics-grid" id="revenueMetrics"></div>
-                
-                <div class="chart-section">
-                    <h2>Revenue Composition Over Time</h2>
-                    <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Stacked view showing how each channel contributes to total revenue</p>
-                    <div class="chart-container">
-                        <canvas id="revenueStackedChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="chart-section">
-                    <h2>Individual Channel Trends</h2>
-                    <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Track each revenue channel's performance independently</p>
-                    <div class="chart-container">
-                        <canvas id="revenueLineChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="cart-revenue-section">
-                    <h2 class="section-title">Recovered Cart Revenue</h2>
-                    <div class="cart-revenue-chart-container">
-                        <div class="cart-grid">
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                        </div>
-                        <div class="cart-y-axis" id="cartYAxis"></div>
-                        <div class="cart-chart-area" id="cartChartArea"></div>
-                        <div class="cart-x-axis" id="cartXAxis"></div>
-                    </div>
-                    <div class="cart-summary-stats">
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Total Recovered</div>
-                            <div class="cart-stat-value" id="totalRecovered">$0</div>
-                        </div>
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Average Monthly</div>
-                            <div class="cart-stat-value" id="avgMonthly">$0</div>
-                        </div>
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Peak Month</div>
-                            <div class="cart-stat-value" id="peakMonth">$0</div>
-                            <div class="cart-stat-trend" id="peakMonthName"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1990,13 +1837,12 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             if (tabName === 'campaigns') {
                 document.getElementById('campaignsTab').classList.add('active');
+                // Render recovered cart revenue if business data is available
+                if (businessData) {
+                    renderRecoveredCartRevenue();
+                }
             } else if (tabName === 'business') {
                 document.getElementById('businessTab').classList.add('active');
-            } else if (tabName === 'revenue') {
-                document.getElementById('revenueTab').classList.add('active');
-                if (businessData) {
-                    updateRevenueDashboard();
-                }
             } else if (tabName === 'trends') {
                 document.getElementById('trendsTab').classList.add('active');
                 if (businessData) {
@@ -2298,75 +2144,96 @@
             const metaRoas = metrics.meta.spend > 0 ? metrics.meta.revenue / metrics.meta.spend : 0;
             const googleRoas = metrics.google.spend > 0 ? metrics.google.revenue / metrics.google.spend : 0;
             
-            // Calculate grades based on ROAS vs breakeven
-            const metaGrade = metaRoas >= metrics.breakevenRoas * 2 ? 'A' : metaRoas >= metrics.breakevenRoas * 1.5 ? 'B+' : metaRoas >= metrics.breakevenRoas * 1.2 ? 'B' : 'C';
-            const googleGrade = googleRoas >= metrics.breakevenRoas * 2 ? 'A' : googleRoas >= metrics.breakevenRoas * 1.5 ? 'B+' : googleRoas >= metrics.breakevenRoas * 1.2 ? 'B' : 'C';
-            const metaRating = metaRoas >= metrics.breakevenRoas * 2 ? 'EXCELLENT' : metaRoas >= metrics.breakevenRoas * 1.5 ? 'GREAT' : metaRoas >= metrics.breakevenRoas * 1.2 ? 'GOOD' : 'NEEDS WORK';
-            const googleRating = googleRoas >= metrics.breakevenRoas * 2 ? 'EXCELLENT' : googleRoas >= metrics.breakevenRoas * 1.5 ? 'GREAT' : googleRoas >= metrics.breakevenRoas * 1.2 ? 'GOOD' : 'NEEDS WORK';
-            const metaGradeClass = metaGrade === 'A' ? 'grade-a' : metaGrade.startsWith('B') ? 'grade-b' : 'grade-c';
-            const googleGradeClass = googleGrade === 'A' ? 'grade-a' : googleGrade.startsWith('B') ? 'grade-b' : 'grade-c';
-            const metaRatingClass = metaRating === 'EXCELLENT' ? 'rating-excellent' : metaRating === 'GREAT' ? 'rating-great' : 'rating-good';
-            const googleRatingClass = googleRating === 'EXCELLENT' ? 'rating-excellent' : googleRating === 'GREAT' ? 'rating-great' : 'rating-good';
+            // Find max values for scaling bars
+            const maxSpend = Math.max(metrics.meta.spend, metrics.google.spend);
+            const maxRevenue = Math.max(metrics.meta.revenue, metrics.google.revenue);
+            const maxRoas = Math.max(metaRoas, googleRoas);
             
-            // Scorecard header
-            let scorecardHeaderHTML = `
-                <div class="scorecard-platform">
-                    <div class="scorecard-platform-name" style="color: #0095F6;">Meta</div>
-                    <div class="scorecard-grade ${metaGradeClass}">${metaGrade}</div>
-                    <div class="scorecard-rating ${metaRatingClass}">${metaRating}</div>
-                </div>
-                <div class="scorecard-platform">
-                    <div class="scorecard-platform-name" style="color: #34A853;">Google</div>
-                    <div class="scorecard-grade ${googleGradeClass}">${googleGrade}</div>
-                    <div class="scorecard-rating ${googleRatingClass}">${googleRating}</div>
-                </div>
-            `;
-            document.getElementById('scorecardHeader').innerHTML = scorecardHeaderHTML;
-            
-            // Scorecard metrics
-            let scorecardMetricsHTML = `
-                <div class="scorecard-metric">
-                    <div class="scorecard-metric-label">Ad Spend</div>
-                    <div class="scorecard-metric-values">
-                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metrics.meta.spend)}</div>
-                        <div class="scorecard-vs">vs</div>
-                        <div class="scorecard-value scorecard-value-google">${formatCurrency(metrics.google.spend)}</div>
+            // Butterfly chart rows
+            let butterflyHTML = `
+                <!-- Ad Spend -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.spend)}</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxSpend > 0 ? (metrics.meta.spend / maxSpend) * 100 : 0}%;"></div>
+                        </div>
+                    </div>
+                    <div class="butterfly-label">Ad Spend</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxSpend > 0 ? (metrics.google.spend / maxSpend) * 100 : 0}%;"></div>
+                        </div>
+                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.spend)}</span>
                     </div>
                 </div>
-                <div class="scorecard-metric">
-                    <div class="scorecard-metric-label">Revenue</div>
-                    <div class="scorecard-metric-values">
-                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metrics.meta.revenue)}</div>
-                        <div class="scorecard-vs">vs</div>
-                        <div class="scorecard-value scorecard-value-google">${formatCurrency(metrics.google.revenue)}</div>
+                <!-- Revenue -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${formatCurrency(metrics.meta.revenue)}</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRevenue > 0 ? (metrics.meta.revenue / maxRevenue) * 100 : 0}%;"></div>
+                        </div>
+                    </div>
+                    <div class="butterfly-label">Revenue</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRevenue > 0 ? (metrics.google.revenue / maxRevenue) * 100 : 0}%;"></div>
+                        </div>
+                        <span class="butterfly-value butterfly-value-right">${formatCurrency(metrics.google.revenue)}</span>
                     </div>
                 </div>
-                <div class="scorecard-metric">
-                    <div class="scorecard-metric-label">ROAS</div>
-                    <div class="scorecard-metric-values">
-                        <div class="scorecard-value scorecard-value-meta">${metaRoas.toFixed(2)}x</div>
-                        <div class="scorecard-vs">vs</div>
-                        <div class="scorecard-value scorecard-value-google">${googleRoas.toFixed(2)}x</div>
+                <!-- ROAS -->
+                <div class="butterfly-row">
+                    <div class="butterfly-bar-left">
+                        <span class="butterfly-value butterfly-value-left">${metaRoas.toFixed(2)}x</span>
+                        <div class="butterfly-track butterfly-track-left">
+                            <div class="butterfly-fill butterfly-fill-meta" style="width: ${maxRoas > 0 ? (metaRoas / maxRoas) * 100 : 0}%;"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="scorecard-metric">
-                    <div class="scorecard-metric-label">Profit</div>
-                    <div class="scorecard-metric-values">
-                        <div class="scorecard-value scorecard-value-meta">${formatCurrency(metaProfit)}</div>
-                        <div class="scorecard-vs">vs</div>
-                        <div class="scorecard-value scorecard-value-google">${formatCurrency(googleProfit)}</div>
-                    </div>
-                </div>
-                <div class="scorecard-metric">
-                    <div class="scorecard-metric-label">Clicks</div>
-                    <div class="scorecard-metric-values">
-                        <div class="scorecard-value scorecard-value-meta">${metrics.meta.clicks.toLocaleString()}</div>
-                        <div class="scorecard-vs">vs</div>
-                        <div class="scorecard-value scorecard-value-google">${metrics.google.clicks.toLocaleString()}</div>
+                    <div class="butterfly-label">ROAS</div>
+                    <div class="butterfly-bar-right">
+                        <div class="butterfly-track">
+                            <div class="butterfly-fill butterfly-fill-google" style="width: ${maxRoas > 0 ? (googleRoas / maxRoas) * 100 : 0}%;"></div>
+                        </div>
+                        <span class="butterfly-value butterfly-value-right">${googleRoas.toFixed(2)}x</span>
                     </div>
                 </div>
             `;
-            document.getElementById('scorecardMetrics').innerHTML = scorecardMetricsHTML;
+            document.getElementById('butterflyChartRows').innerHTML = butterflyHTML;
+            
+            // Profit card content
+            let profitHTML = `
+                <div class="profit-card-total" style="margin-bottom: 12px;">
+                    <div class="profit-card-total-label">Total Revenue</div>
+                    <div class="profit-card-total-value">${formatCurrency(metrics.total.revenue)}</div>
+                </div>
+                <div class="profit-card-total">
+                    <div class="profit-card-total-label">Total Profit</div>
+                    <div class="profit-card-total-value" style="color: #10b981;">${formatCurrency(totalProfit)}</div>
+                </div>
+                <div class="profit-item" style="background: rgba(0, 149, 246, 0.08); border: 1px solid rgba(0, 149, 246, 0.2);">
+                    <div class="profit-item-header">
+                        <div class="profit-item-left">
+                            <div class="profit-item-dot" style="background: #0095F6;"></div>
+                            <span class="profit-item-name">Meta</span>
+                        </div>
+                        <span class="profit-item-value">${formatCurrency(metaProfit)}</span>
+                    </div>
+                    <div class="profit-item-percent">${metaProfitPct.toFixed(0)}% of total</div>
+                </div>
+                <div class="profit-item" style="background: rgba(52, 168, 83, 0.08); border: 1px solid rgba(52, 168, 83, 0.2);">
+                    <div class="profit-item-header">
+                        <div class="profit-item-left">
+                            <div class="profit-item-dot" style="background: #34A853;"></div>
+                            <span class="profit-item-name">Google</span>
+                        </div>
+                        <span class="profit-item-value">${formatCurrency(googleProfit)}</span>
+                    </div>
+                    <div class="profit-item-percent">${googleProfitPct.toFixed(0)}% of total</div>
+                </div>
+            `;
+            document.getElementById('profitCardContent').innerHTML = profitHTML;
             
             // Campaign table
             const allCampaigns = [
@@ -2408,11 +2275,11 @@
             // Budget recommendations
             generateBudgetRecommendations(allCampaigns, metrics);
             
-            // Top campaign cards
-            generateTopCampaignCards(allCampaigns, metrics);
-            
             // Charts
             createCampaignCharts();
+            
+            // Recovered cart revenue chart
+            renderRecoveredCartRevenue();
         }
         
         function createCampaignCharts() {
@@ -2811,114 +2678,6 @@
             container.innerHTML = html;
         }
         
-        function generateTopCampaignCards(campaigns, metrics) {
-            const container = document.getElementById('topCampaignCards');
-            if (!container) return;
-            
-            // Sort campaigns by ROAS
-            const sortedByRoas = [...campaigns].sort((a, b) => {
-                const roasA = a.spend > 0 ? a.revenue / a.spend : 0;
-                const roasB = b.spend > 0 ? b.revenue / b.spend : 0;
-                return roasB - roasA;
-            });
-            
-            // Get top 3 performers and worst performer
-            const topPerformers = sortedByRoas.slice(0, 2);
-            const worstPerformer = sortedByRoas[sortedByRoas.length - 1];
-            const avgRoas = metrics.total.roas;
-            
-            const campaignsToShow = [...topPerformers];
-            // Only add worst performer if it's actually performing poorly
-            const worstRoas = worstPerformer.spend > 0 ? worstPerformer.revenue / worstPerformer.spend : 0;
-            if (worstRoas < metrics.breakevenRoas * 1.3) {
-                campaignsToShow.push(worstPerformer);
-            }
-            
-            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">';
-            
-            campaignsToShow.forEach(camp => {
-                const roas = camp.spend > 0 ? camp.revenue / camp.spend : 0;
-                const profit = (camp.revenue * metrics.margin) - camp.spend;
-                const dailySpend = camp.spend / metrics.days;
-                
-                let action = '';
-                let actionClass = '';
-                let cardBg = '';
-                let cardBorder = '';
-                let statusBg = '';
-                let advice = '';
-                
-                if (roas >= avgRoas * 1.5) {
-                    action = 'EXCELLENT';
-                    actionClass = 'status-excellent';
-                    cardBg = '#f0fdf4';
-                    cardBorder = '#10b981';
-                    statusBg = '#10b981';
-                    const suggestedIncrease = Math.round(dailySpend * 0.25);
-                    const newDaily = Math.round(dailySpend + suggestedIncrease);
-                    advice = `Increase budget by 25% (+$${suggestedIncrease}/day to $${newDaily}/day). This campaign is crushing it!`;
-                } else if (roas >= avgRoas * 1.2) {
-                    action = 'GOOD';
-                    actionClass = 'status-good';
-                    cardBg = '#eff6ff';
-                    cardBorder = '#3b82f6';
-                    statusBg = '#3b82f6';
-                    const suggestedIncrease = Math.round(dailySpend * 0.15);
-                    const newDaily = Math.round(dailySpend + suggestedIncrease);
-                    advice = `Solid performer. Increase budget by 15% (+$${suggestedIncrease}/day to $${newDaily}/day).`;
-                } else if (roas < metrics.breakevenRoas) {
-                    action = 'POOR';
-                    actionClass = 'status-poor';
-                    cardBg = '#fef2f2';
-                    cardBorder = '#ef4444';
-                    statusBg = '#ef4444';
-                    advice = `PAUSE immediately. Losing $${Math.abs(Math.round(profit / metrics.days)).toLocaleString()}/day. Rework creative and relaunch.`;
-                } else {
-                    action = 'OKAY';
-                    actionClass = 'status-okay';
-                    cardBg = '#fffbeb';
-                    cardBorder = '#f59e0b';
-                    statusBg = '#f59e0b';
-                    advice = `Barely profitable. Test new creative/targeting before scaling.`;
-                }
-                
-                html += `
-                    <div style="padding: 24px; background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 12px; border-left: 4px solid ${cardBorder};">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                            <div>
-                                <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">${camp.name}</div>
-                                <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">${camp.platform}</div>
-                            </div>
-                            <div style="padding: 6px 14px; background: ${statusBg}; color: white; border-radius: 6px; font-size: 12px; font-weight: 600; height: fit-content;">
-                                ${action}
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">ROAS</div>
-                                <div style="font-size: 20px; font-weight: 700; color: ${roas >= metrics.breakevenRoas ? '#10b981' : '#ef4444'};">${roas.toFixed(2)}x</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Profit</div>
-                                <div style="font-size: 20px; font-weight: 700; color: ${profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(profit)}</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Spend</div>
-                                <div style="font-size: 20px; font-weight: 700;">${formatCurrency(camp.spend)}</div>
-                            </div>
-                        </div>
-                        <div style="padding: 14px; background: white; border-radius: 8px;">
-                            <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">💡 Recommendation:</div>
-                            <div style="font-size: 13px; color: #4b5563; line-height: 1.6;">${advice}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
         function renderRecoveredCartRevenue() {
             if (!businessData || businessData.length === 0) return;
             
@@ -2983,287 +2742,6 @@
             document.getElementById('avgMonthly').textContent = formatCurrency(Math.round(avgMonthly));
             document.getElementById('peakMonth').textContent = formatCurrency(peakData.recoveredCartRevenue);
             document.getElementById('peakMonthName').textContent = peakData.month.split(' ')[0];
-        }
-        
-        // ==========================================
-        // REVENUE BREAKDOWN CODE
-        // ==========================================
-        
-        let revenueStackedChart = null;
-        let revenueLineChart = null;
-        
-        function updateRevenueDashboard() {
-            if (!businessData || businessData.length === 0) return;
-            
-            const currentMonth = businessData[businessData.length - 1];
-            
-            document.getElementById('revenuePageSubtitle').textContent = `Latest: ${currentMonth.month}`;
-            document.getElementById('revenueCurrentMonthTitle').textContent = `Current Month Performance (${currentMonth.month})`;
-            
-            // Calculate month-over-month changes
-            let adRevenueChange = 0, websiteSalesChange = 0, lucasSalesChange = 0, affiliateSalesChange = 0, cartRevenueChange = 0, trafficChange = 0;
-            
-            if (businessData.length > 1) {
-                const prevMonth = businessData[businessData.length - 2];
-                const totalBusinessChange = ((currentMonth.totalSales - prevMonth.totalSales) / prevMonth.totalSales * 100);
-                const adRevenueCurrent = currentMonth.googleRevenue + currentMonth.metaRevenue;
-                const adRevenuePrev = prevMonth.googleRevenue + prevMonth.metaRevenue;
-                adRevenueChange = adRevenuePrev > 0 ? ((adRevenueCurrent - adRevenuePrev) / adRevenuePrev * 100) : 0;
-                websiteSalesChange = prevMonth.websiteSales > 0 ? ((currentMonth.websiteSales - prevMonth.websiteSales) / prevMonth.websiteSales * 100) : 0;
-                lucasSalesChange = prevMonth.lucasSales > 0 ? ((currentMonth.lucasSales - prevMonth.lucasSales) / prevMonth.lucasSales * 100) : 0;
-                affiliateSalesChange = prevMonth.affiliateSales > 0 ? ((currentMonth.affiliateSales - prevMonth.affiliateSales) / prevMonth.affiliateSales * 100) : 0;
-                cartRevenueChange = prevMonth.recoveredCartRevenue > 0 ? ((currentMonth.recoveredCartRevenue - prevMonth.recoveredCartRevenue) / prevMonth.recoveredCartRevenue * 100) : 0;
-                trafficChange = prevMonth.traffic > 0 ? ((currentMonth.traffic - prevMonth.traffic) / prevMonth.traffic * 100) : 0;
-            }
-            
-            const totalAdRevenue = currentMonth.googleRevenue + currentMonth.metaRevenue;
-            
-            let metricsHTML = `
-                <div class="metric-card">
-                    <div class="metric-label">Total Business Sales</div>
-                    <div class="metric-value">${formatCurrency(currentMonth.totalSales)}</div>
-                    <div class="metric-subtext">All channels combined</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Revenue</div>
-                    <div class="metric-value">${formatCurrency(totalAdRevenue)}</div>
-                    <div class="metric-subtext">Meta + Google combined</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Website Sales</div>
-                    <div class="metric-value">${formatCurrency(currentMonth.websiteSales)}</div>
-                    <div class="metric-subtext">Direct website purchases</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Lucas Sales</div>
-                    <div class="metric-value">${formatCurrency(currentMonth.lucasSales)}</div>
-                    <div class="metric-subtext">Personal sales channel</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Affiliate Sales</div>
-                    <div class="metric-value">${formatCurrency(currentMonth.affiliateSales)}</div>
-                    <div class="metric-subtext">Partner commissions</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Recovered Cart Revenue</div>
-                    <div class="metric-value">${formatCurrency(currentMonth.recoveredCartRevenue)}</div>
-                    <div class="metric-subtext">From abandoned carts</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Website Traffic</div>
-                    <div class="metric-value">${currentMonth.traffic.toLocaleString()}</div>
-                    <div class="metric-subtext">Visitors this month</div>
-                </div>
-            `;
-            document.getElementById('revenueMetrics').innerHTML = metricsHTML;
-            
-            createRevenueCharts();
-            renderRecoveredCartRevenue();
-        }
-        
-        function createRevenueCharts() {
-            if (!businessData || businessData.length === 0) return;
-            
-            const months = businessData.map(d => d.month.split(' ')[0]); // Just month names
-            const adRevenue = businessData.map(d => d.googleRevenue + d.metaRevenue);
-            const websiteSales = businessData.map(d => d.websiteSales);
-            const lucasSales = businessData.map(d => d.lucasSales);
-            const affiliateSales = businessData.map(d => d.affiliateSales);
-            const recoveredCart = businessData.map(d => d.recoveredCartRevenue);
-            
-            const isDark = document.body.classList.contains('dark-mode');
-            const gridColor = isDark ? '#374151' : '#f3f4f6';
-            const textColor = isDark ? '#9ca3af' : '#6b7280';
-            
-            Chart.defaults.font.family = "'Outfit', sans-serif";
-            Chart.defaults.color = textColor;
-            
-            // Stacked Bar Chart
-            if (revenueStackedChart) revenueStackedChart.destroy();
-            const stackedCtx = document.getElementById('revenueStackedChart').getContext('2d');
-            revenueStackedChart = new Chart(stackedCtx, {
-                type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [
-                        {
-                            label: 'Ad Revenue',
-                            data: adRevenue,
-                            backgroundColor: '#8b5cf6',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
-                            label: 'Website Sales',
-                            data: websiteSales,
-                            backgroundColor: '#10b981',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
-                            label: 'Lucas Sales',
-                            data: lucasSales,
-                            backgroundColor: '#f59e0b',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
-                            label: 'Affiliate Sales',
-                            data: affiliateSales,
-                            backgroundColor: '#ec4899',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
-                            label: 'Recovered Cart',
-                            data: recoveredCart,
-                            backgroundColor: '#06b6d4',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'circle',
-                                padding: 15
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems) {
-                                    let sum = 0;
-                                    tooltipItems.forEach(function(tooltipItem) {
-                                        sum += tooltipItem.parsed.y;
-                                    });
-                                    return 'Total: ' + formatCurrency(sum);
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: true,
-                            grid: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            grid: {
-                                color: gridColor
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + (value / 1000) + 'k';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Line Chart
-            if (revenueLineChart) revenueLineChart.destroy();
-            const lineCtx = document.getElementById('revenueLineChart').getContext('2d');
-            revenueLineChart = new Chart(lineCtx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [
-                        {
-                            label: 'Ad Revenue',
-                            data: adRevenue,
-                            borderColor: '#8b5cf6',
-                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Website Sales',
-                            data: websiteSales,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Lucas Sales',
-                            data: lucasSales,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Affiliate Sales',
-                            data: affiliateSales,
-                            borderColor: '#ec4899',
-                            backgroundColor: 'rgba(236, 72, 153, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Recovered Cart',
-                            data: recoveredCart,
-                            borderColor: '#06b6d4',
-                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'circle',
-                                padding: 15
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: gridColor
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + (value / 1000) + 'k';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
         }
         
         // ==========================================
@@ -3498,6 +2976,9 @@
             `;
             
             createBusinessCharts();
+            
+            // Also render recovered cart revenue for campaigns tab
+            renderRecoveredCartRevenue();
         }
         
         function createBusinessCharts() {

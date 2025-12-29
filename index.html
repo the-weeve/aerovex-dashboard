@@ -1670,11 +1670,21 @@
                 <h2 class="section-title" id="revenueCurrentMonthTitle">Current Month Performance</h2>
                 <div class="metrics-grid" id="revenueMetrics"></div>
                 
-                <div class="chart-section">
-                    <h2>Revenue Composition Over Time</h2>
-                    <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Stacked view showing how each channel contributes to total revenue</p>
-                    <div class="chart-container">
-                        <canvas id="revenueStackedChart"></canvas>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+                    <div class="chart-section">
+                        <h2>Revenue by Channel</h2>
+                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Your three main revenue streams</p>
+                        <div class="chart-container">
+                            <canvas id="revenueChannelChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-section">
+                        <h2>Website Sales Attribution</h2>
+                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Where your website sales are coming from</p>
+                        <div class="chart-container">
+                            <canvas id="revenueAttributionChart"></canvas>
+                        </div>
                     </div>
                 </div>
                 
@@ -1683,37 +1693,6 @@
                     <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Track each revenue channel's performance independently</p>
                     <div class="chart-container">
                         <canvas id="revenueLineChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="cart-revenue-section">
-                    <h2 class="section-title">Recovered Cart Revenue</h2>
-                    <div class="cart-revenue-chart-container">
-                        <div class="cart-grid">
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                            <div class="cart-grid-line"></div>
-                        </div>
-                        <div class="cart-y-axis" id="cartYAxis"></div>
-                        <div class="cart-chart-area" id="cartChartArea"></div>
-                        <div class="cart-x-axis" id="cartXAxis"></div>
-                    </div>
-                    <div class="cart-summary-stats">
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Total Recovered</div>
-                            <div class="cart-stat-value" id="totalRecovered">$0</div>
-                        </div>
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Average Monthly</div>
-                            <div class="cart-stat-value" id="avgMonthly">$0</div>
-                        </div>
-                        <div class="cart-stat">
-                            <div class="cart-stat-label">Peak Month</div>
-                            <div class="cart-stat-value" id="peakMonth">$0</div>
-                            <div class="cart-stat-trend" id="peakMonthName"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -2690,77 +2669,12 @@
             container.innerHTML = html;
         }
         
-        function renderRecoveredCartRevenue() {
-            if (!businessData || businessData.length === 0) return;
-            
-            // Filter data to only include months with recovered cart revenue > 0
-            const cartData = businessData.filter(m => m.recoveredCartRevenue > 0);
-            
-            if (cartData.length === 0) {
-                // If no cart revenue data, hide the section
-                return;
-            }
-            
-            const maxRevenue = Math.max(...cartData.map(d => d.recoveredCartRevenue));
-            const roundedMax = Math.ceil(maxRevenue / 5000) * 5000;
-            const step = roundedMax / 4;
-            
-            // Clear previous content
-            document.getElementById('cartYAxis').innerHTML = '';
-            document.getElementById('cartChartArea').innerHTML = '';
-            document.getElementById('cartXAxis').innerHTML = '';
-            
-            // Y-axis labels
-            const yAxis = document.getElementById('cartYAxis');
-            for (let i = 0; i <= 4; i++) {
-                const label = document.createElement('div');
-                label.className = 'cart-y-label';
-                label.textContent = formatCurrency(roundedMax - (step * i));
-                yAxis.appendChild(label);
-            }
-            
-            // Bars
-            const chartArea = document.getElementById('cartChartArea');
-            cartData.forEach(data => {
-                const barWrapper = document.createElement('div');
-                barWrapper.className = 'cart-bar-wrapper';
-                
-                const heightPercent = (data.recoveredCartRevenue / roundedMax) * 100;
-                
-                barWrapper.innerHTML = `
-                    <div class="cart-bar" style="height: ${heightPercent}%;">
-                        <div class="cart-bar-value">${formatCurrency(data.recoveredCartRevenue)}</div>
-                    </div>
-                `;
-                
-                chartArea.appendChild(barWrapper);
-            });
-            
-            // X-axis labels (show just month name, not year)
-            const xAxis = document.getElementById('cartXAxis');
-            cartData.forEach(data => {
-                const label = document.createElement('div');
-                label.className = 'cart-x-label';
-                label.textContent = data.month.split(' ')[0]; // Just the month name
-                xAxis.appendChild(label);
-            });
-            
-            // Summary stats
-            const totalRecovered = cartData.reduce((sum, d) => sum + d.recoveredCartRevenue, 0);
-            const avgMonthly = totalRecovered / cartData.length;
-            const peakData = cartData.reduce((max, d) => d.recoveredCartRevenue > max.recoveredCartRevenue ? d : max);
-            
-            document.getElementById('totalRecovered').textContent = formatCurrency(totalRecovered);
-            document.getElementById('avgMonthly').textContent = formatCurrency(Math.round(avgMonthly));
-            document.getElementById('peakMonth').textContent = formatCurrency(peakData.recoveredCartRevenue);
-            document.getElementById('peakMonthName').textContent = peakData.month.split(' ')[0];
-        }
-        
         // ==========================================
         // REVENUE BREAKDOWN CODE
         // ==========================================
         
-        let revenueStackedChart = null;
+        let revenueChannelChart = null;
+        let revenueAttributionChart = null;
         let revenueLineChart = null;
         
         function updateRevenueDashboard() {
@@ -2829,7 +2743,6 @@
             document.getElementById('revenueMetrics').innerHTML = metricsHTML;
             
             createRevenueCharts();
-            renderRecoveredCartRevenue();
         }
         
         function createRevenueCharts() {
@@ -2849,46 +2762,32 @@
             Chart.defaults.font.family = "'Outfit', sans-serif";
             Chart.defaults.color = textColor;
             
-            // Stacked Bar Chart
-            if (revenueStackedChart) revenueStackedChart.destroy();
-            const stackedCtx = document.getElementById('revenueStackedChart').getContext('2d');
-            revenueStackedChart = new Chart(stackedCtx, {
+            // Chart 1: Revenue by Channel (Website, Lucas, Affiliate)
+            if (revenueChannelChart) revenueChannelChart.destroy();
+            const channelCtx = document.getElementById('revenueChannelChart').getContext('2d');
+            revenueChannelChart = new Chart(channelCtx, {
                 type: 'bar',
                 data: {
                     labels: months,
                     datasets: [
                         {
-                            label: 'Ad Revenue',
-                            data: adRevenue,
-                            backgroundColor: '#8b5cf6',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
                             label: 'Website Sales',
                             data: websiteSales,
-                            backgroundColor: '#10b981',
+                            backgroundColor: '#3b82f6',
                             borderRadius: 6,
                             borderSkipped: false,
                         },
                         {
                             label: 'Lucas Sales',
                             data: lucasSales,
-                            backgroundColor: '#f59e0b',
+                            backgroundColor: '#8b5cf6',
                             borderRadius: 6,
                             borderSkipped: false,
                         },
                         {
                             label: 'Affiliate Sales',
                             data: affiliateSales,
-                            backgroundColor: '#ec4899',
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        },
-                        {
-                            label: 'Recovered Cart',
-                            data: recoveredCart,
-                            backgroundColor: '#06b6d4',
+                            backgroundColor: '#10b981',
                             borderRadius: 6,
                             borderSkipped: false,
                         }
@@ -2903,21 +2802,122 @@
                     },
                     plugins: {
                         legend: {
-                            position: 'top',
+                            position: 'bottom',
                             labels: {
                                 usePointStyle: true,
                                 pointStyle: 'circle',
-                                padding: 15
+                                padding: 15,
+                                font: { size: 12 }
                             }
                         },
                         tooltip: {
                             callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                },
                                 footer: function(tooltipItems) {
                                     let sum = 0;
                                     tooltipItems.forEach(function(tooltipItem) {
                                         sum += tooltipItem.parsed.y;
                                     });
                                     return 'Total: ' + formatCurrency(sum);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: false,
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Chart 2: Website Sales Attribution (Ad-Driven, Organic, Recovered Cart)
+            // Calculate organic sales: Website Sales - (Ad Revenue + Recovered Cart)
+            const adDrivenSales = businessData.map(d => d.googleRevenue + d.metaRevenue);
+            const organicSales = businessData.map((d, i) => {
+                const organic = d.websiteSales - (adDrivenSales[i] + d.recoveredCartRevenue);
+                return organic > 0 ? organic : 0;
+            });
+            
+            if (revenueAttributionChart) revenueAttributionChart.destroy();
+            const attributionCtx = document.getElementById('revenueAttributionChart').getContext('2d');
+            revenueAttributionChart = new Chart(attributionCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Ad-Driven Sales',
+                            data: adDrivenSales,
+                            backgroundColor: '#0095f6',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        },
+                        {
+                            label: 'Organic Sales',
+                            data: organicSales,
+                            backgroundColor: '#6b7280',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        },
+                        {
+                            label: 'Recovered Cart',
+                            data: recoveredCart,
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.chart.data.datasets.reduce((sum, ds) => {
+                                        return sum + ds.data[context.dataIndex];
+                                    }, 0);
+                                    const percent = ((context.parsed.y / total) * 100).toFixed(1);
+                                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y) + ' (' + percent + '%)';
+                                },
+                                footer: function(tooltipItems) {
+                                    let sum = 0;
+                                    tooltipItems.forEach(function(tooltipItem) {
+                                        sum += tooltipItem.parsed.y;
+                                    });
+                                    return 'Total Website Sales: ' + formatCurrency(sum);
                                 }
                             }
                         }
@@ -2931,6 +2931,7 @@
                         },
                         y: {
                             stacked: true,
+                            beginAtZero: true,
                             grid: {
                                 color: gridColor
                             },

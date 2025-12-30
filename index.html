@@ -2063,6 +2063,8 @@
                         clicks: parseInt(row['Clicks']?.replace(/,/g, '')) || 0
                     };
                     
+                    console.log(`Parsing ${platform} campaign: ${campaignName}`, campaign);
+                    
                     if (platform === 'meta') {
                         metaCampaigns.push(campaign);
                     } else if (platform === 'google') {
@@ -2077,6 +2079,9 @@
                 startDate = `${now.getMonth() + 1}/1/${now.getFullYear()}`;
                 endDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
             }
+            
+            console.log(`Parsed ${metaCampaigns.length} Meta campaigns and ${googleCampaigns.length} Google campaigns`);
+            console.log('Google campaigns:', googleCampaigns.map(c => c.name));
             
             return {
                 metaData: { campaigns: metaCampaigns, startDate, endDate },

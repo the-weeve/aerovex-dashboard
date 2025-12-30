@@ -1680,8 +1680,8 @@
                     </div>
                     
                     <div class="chart-section">
-                        <h2>Website Sales Attribution</h2>
-                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Where your website sales are coming from</p>
+                        <h2>Sales Attribution</h2>
+                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Website sales breakdown + recovered cart revenue</p>
                         <div class="chart-container">
                             <canvas id="revenueAttributionChart"></canvas>
                         </div>
@@ -2849,10 +2849,10 @@
             });
             
             // Chart 2: Website Sales Attribution (Ad-Driven, Organic, Recovered Cart)
-            // Calculate organic sales: Website Sales - (Ad Revenue + Recovered Cart)
+            // Calculate organic sales: Website Sales - Ad Revenue
             const adDrivenSales = businessData.map(d => d.googleRevenue + d.metaRevenue);
             const organicSales = businessData.map((d, i) => {
-                const organic = d.websiteSales - (adDrivenSales[i] + d.recoveredCartRevenue);
+                const organic = d.websiteSales - adDrivenSales[i];
                 return organic > 0 ? organic : 0;
             });
             
@@ -2917,7 +2917,7 @@
                                     tooltipItems.forEach(function(tooltipItem) {
                                         sum += tooltipItem.parsed.y;
                                     });
-                                    return 'Total Website Sales: ' + formatCurrency(sum);
+                                    return 'Total: ' + formatCurrency(sum);
                                 }
                             }
                         }
@@ -4438,4 +4438,3 @@ Guidelines:
     </script>
 </body>
 </html>
-

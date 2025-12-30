@@ -1680,8 +1680,8 @@
                     </div>
                     
                     <div class="chart-section">
-                        <h2>Sales Attribution</h2>
-                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Website sales breakdown + recovered cart revenue</p>
+                        <h2>Website Sales Attribution</h2>
+                        <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Where your website sales are coming from</p>
                         <div class="chart-container">
                             <canvas id="revenueAttributionChart"></canvas>
                         </div>
@@ -2876,13 +2876,6 @@
                             backgroundColor: '#6b7280',
                             borderRadius: 6,
                             borderSkipped: false,
-                        },
-                        {
-                            label: 'Recovered Cart',
-                            data: recoveredCart,
-                            backgroundColor: '#f59e0b',
-                            borderRadius: 6,
-                            borderSkipped: false,
                         }
                     ]
                 },
@@ -2917,7 +2910,7 @@
                                     tooltipItems.forEach(function(tooltipItem) {
                                         sum += tooltipItem.parsed.y;
                                     });
-                                    return 'Total: ' + formatCurrency(sum);
+                                    return 'Total Website Sales: ' + formatCurrency(sum);
                                 }
                             }
                         }

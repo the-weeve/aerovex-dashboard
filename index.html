@@ -1635,10 +1635,10 @@
                     </div>
                 </div>
                 
-                <!-- Top Performing Campaigns -->
+                <!-- Campaign Performance -->
                 <div class="chart-section">
-                    <h2>Top Performing Campaigns</h2>
-                    <p style="color: #6b7280; margin-bottom: 24px;">Your best and worst campaigns with actionable recommendations</p>
+                    <h2>Campaign Performance</h2>
+                    <p style="color: #6b7280; margin-bottom: 24px;">All campaigns ranked by ROAS with key performance metrics</p>
                     <div id="topCampaignCards"></div>
                 </div>
                 
@@ -2565,101 +2565,98 @@
             const container = document.getElementById('topCampaignCards');
             if (!container) return;
             
-            // Sort campaigns by ROAS
+            // Sort campaigns by ROAS (best to worst)
             const sortedByRoas = [...campaigns].sort((a, b) => {
                 const roasA = a.spend > 0 ? a.revenue / a.spend : 0;
                 const roasB = b.spend > 0 ? b.revenue / b.spend : 0;
                 return roasB - roasA;
             });
             
-            // Get top 3 performers and worst performer
-            const topPerformers = sortedByRoas.slice(0, 2);
-            const worstPerformer = sortedByRoas[sortedByRoas.length - 1];
-            const avgRoas = metrics.total.roas;
+            // Calculate max values for bar scaling
+            const maxSpend = Math.max(...sortedByRoas.map(c => c.spend));
+            const maxRevenue = Math.max(...sortedByRoas.map(c => c.revenue));
+            const maxRoas = Math.max(...sortedByRoas.map(c => c.spend > 0 ? c.revenue / c.spend : 0));
             
-            const campaignsToShow = [...topPerformers];
-            // Only add worst performer if it's actually performing poorly
-            const worstRoas = worstPerformer.spend > 0 ? worstPerformer.revenue / worstPerformer.spend : 0;
-            if (worstRoas < metrics.breakevenRoas * 1.3) {
-                campaignsToShow.push(worstPerformer);
-            }
+            let html = '<div style="display: flex; flex-direction: column; gap: 20px;">';
             
-            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">';
-            
-            campaignsToShow.forEach(camp => {
+            sortedByRoas.forEach(camp => {
                 const roas = camp.spend > 0 ? camp.revenue / camp.spend : 0;
                 const profit = (camp.revenue * metrics.margin) - camp.spend;
-                const dailySpend = camp.spend / metrics.days;
                 
-                let action = '';
-                let actionClass = '';
-                let cardBg = '';
-                let cardBorder = '';
-                let statusBg = '';
-                let advice = '';
+                // Determine performance level
+                let badge = '';
+                let badgeColor = '';
                 
-                if (roas >= avgRoas * 1.5) {
-                    action = 'EXCELLENT';
-                    actionClass = 'status-excellent';
-                    cardBg = '#f0fdf4';
-                    cardBorder = '#10b981';
-                    statusBg = '#10b981';
-                    const suggestedIncrease = Math.round(dailySpend * 0.25);
-                    const newDaily = Math.round(dailySpend + suggestedIncrease);
-                    advice = `Increase budget by 25% (+$${suggestedIncrease}/day to $${newDaily}/day). This campaign is crushing it!`;
-                } else if (roas >= avgRoas * 1.2) {
-                    action = 'GOOD';
-                    actionClass = 'status-good';
-                    cardBg = '#eff6ff';
-                    cardBorder = '#3b82f6';
-                    statusBg = '#3b82f6';
-                    const suggestedIncrease = Math.round(dailySpend * 0.15);
-                    const newDaily = Math.round(dailySpend + suggestedIncrease);
-                    advice = `Solid performer. Increase budget by 15% (+$${suggestedIncrease}/day to $${newDaily}/day).`;
-                } else if (roas < metrics.breakevenRoas) {
-                    action = 'POOR';
-                    actionClass = 'status-poor';
-                    cardBg = '#fef2f2';
-                    cardBorder = '#ef4444';
-                    statusBg = '#ef4444';
-                    advice = `PAUSE immediately. Losing $${Math.abs(Math.round(profit / metrics.days)).toLocaleString()}/day. Rework creative and relaunch.`;
+                if (roas >= metrics.breakevenRoas * 2) {
+                    badge = 'EXCELLENT';
+                    badgeColor = '#10b981';
+                } else if (roas >= metrics.breakevenRoas * 1.5) {
+                    badge = 'GOOD';
+                    badgeColor = '#3b82f6';
+                } else if (roas >= metrics.breakevenRoas) {
+                    badge = 'OKAY';
+                    badgeColor = '#f59e0b';
                 } else {
-                    action = 'OKAY';
-                    actionClass = 'status-okay';
-                    cardBg = '#fffbeb';
-                    cardBorder = '#f59e0b';
-                    statusBg = '#f59e0b';
-                    advice = `Barely profitable. Test new creative/targeting before scaling.`;
+                    badge = 'POOR';
+                    badgeColor = '#ef4444';
                 }
                 
+                // Calculate bar widths (percentage of max)
+                const spendWidth = maxSpend > 0 ? (camp.spend / maxSpend * 100) : 0;
+                const revenueWidth = maxRevenue > 0 ? (camp.revenue / maxRevenue * 100) : 0;
+                const roasWidth = maxRoas > 0 ? (roas / maxRoas * 100) : 0;
+                
                 html += `
-                    <div style="padding: 24px; background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: 12px; border-left: 4px solid ${cardBorder};">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; background: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <div>
                                 <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">${camp.name}</div>
-                                <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">${camp.platform}</div>
+                                <div style="font-size: 12px; color: #6b7280;">${camp.platform} Campaign</div>
                             </div>
-                            <div style="padding: 6px 14px; background: ${statusBg}; color: white; border-radius: 6px; font-size: 12px; font-weight: 600; height: fit-content;">
-                                ${action}
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">ROAS</div>
-                                <div style="font-size: 20px; font-weight: 700; color: ${roas >= metrics.breakevenRoas ? '#10b981' : '#ef4444'};">${roas.toFixed(2)}x</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Profit</div>
-                                <div style="font-size: 20px; font-weight: 700; color: ${profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(profit)}</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Spend</div>
-                                <div style="font-size: 20px; font-weight: 700;">${formatCurrency(camp.spend)}</div>
+                            <div style="padding: 4px 10px; background: ${badgeColor}; color: white; border-radius: 12px; font-size: 11px; font-weight: 700;">
+                                ${badge}
                             </div>
                         </div>
-                        <div style="padding: 14px; background: white; border-radius: 8px;">
-                            <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">💡 Recommendation:</div>
-                            <div style="font-size: 13px; color: #4b5563; line-height: 1.6;">${advice}</div>
+                        
+                        <div style="display: grid; gap: 16px;">
+                            <!-- Spend Bar -->
+                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
+                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Spend</div>
+                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
+                                    <div style="height: 100%; background: #8b5cf6; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${spendWidth}%;">
+                                        ${formatCurrency(camp.spend)}
+                                    </div>
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600; text-align: right;">${Math.round(spendWidth)}%</div>
+                            </div>
+                            
+                            <!-- Revenue Bar -->
+                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
+                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Revenue</div>
+                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
+                                    <div style="height: 100%; background: #10b981; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${revenueWidth}%;">
+                                        ${formatCurrency(camp.revenue)}
+                                    </div>
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600; text-align: right;">${Math.round(revenueWidth)}%</div>
+                            </div>
+                            
+                            <!-- ROAS Bar -->
+                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
+                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">ROAS</div>
+                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
+                                    <div style="height: 100%; background: #3b82f6; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${roasWidth}%;">
+                                        ${roas.toFixed(2)}x
+                                    </div>
+                                </div>
+                                <div style="font-size: 14px; font-weight: 600; text-align: right; color: ${roas >= metrics.breakevenRoas ? '#10b981' : '#ef4444'};">${roas.toFixed(2)}x</div>
+                            </div>
+                            
+                            <!-- Profit Display -->
+                            <div style="display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; padding-top: 8px; border-top: 1px solid #f3f4f6;">
+                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Profit</div>
+                                <div style="font-size: 18px; font-weight: 700; color: ${profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(profit)}</div>
+                            </div>
                         </div>
                     </div>
                 `;

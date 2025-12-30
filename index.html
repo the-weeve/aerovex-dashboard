@@ -1894,12 +1894,16 @@
         let googleData = null;
         let businessData = null;
         let campaignBubbleChart = null;
+        let campaignProfitChart = null;
         let revenueChart = null;
         let adChart = null;
         let trafficChart = null;
         let revenueTrendChart = null;
         let roasTrendChart = null;
         let trafficTrendChart = null;
+        let revenueChannelChart = null;
+        let revenueAttributionChart = null;
+        let revenueLineChart = null;
         
         // Tab switching
         function switchTab(tabName) {
@@ -2625,10 +2629,6 @@
         // ==========================================
         // REVENUE BREAKDOWN CODE
         // ==========================================
-        
-        let revenueChannelChart = null;
-        let revenueAttributionChart = null;
-        let revenueLineChart = null;
         
         function updateRevenueDashboard() {
             if (!businessData || businessData.length === 0) return;

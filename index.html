@@ -1607,7 +1607,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="campaignMargin">Margin:</label>
-                        <select id="campaignMargin" onchange="updateAllTabs(this.value)">
+                        <select id="campaignMargin" onchange="updateAllTabs(event)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1705,7 +1705,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="businessMargin">Margin:</label>
-                        <select id="businessMargin" onchange="updateAllTabs(this.value)">
+                        <select id="businessMargin" onchange="updateAllTabs(event)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1775,7 +1775,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="trendsMargin">Margin:</label>
-                        <select id="trendsMargin" onchange="updateAllTabs(this.value)">
+                        <select id="trendsMargin" onchange="updateAllTabs(event)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1828,7 +1828,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="summaryMargin">Margin:</label>
-                        <select id="summaryMargin" onchange="updateAllTabs(this.value)">
+                        <select id="summaryMargin" onchange="updateAllTabs(event)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1894,7 +1894,6 @@
         let googleData = null;
         let businessData = null;
         let campaignBubbleChart = null;
-        let campaignProfitChart = null;
         let revenueChart = null;
         let adChart = null;
         let trafficChart = null;
@@ -1948,34 +1947,26 @@
             }
         }
         
-        function updateAllTabs(newMargin) {
-            console.log('updateAllTabs called with margin:', newMargin);
+        function updateAllTabs(event) {
+            // Get the margin from the selector that triggered this
+            const newMargin = event.target.value;
             
             // Sync all margin selectors to the same value
             const marginSelectors = ['businessMargin', 'campaignMargin', 'trendsMargin', 'summaryMargin'];
             marginSelectors.forEach(id => {
                 const el = document.getElementById(id);
-                if (el) {
-                    el.value = newMargin;
-                    console.log('Set', id, 'to', newMargin);
-                }
+                if (el) el.value = newMargin;
             });
             
             // Update all dashboards
-            console.log('Updating dashboards...');
             if (metaData && googleData) {
-                console.log('Updating campaign dashboard');
                 updateCampaignDashboard();
             }
             if (businessData) {
-                console.log('Updating business dashboard');
                 updateBusinessDashboard();
-                console.log('Updating trends dashboard');
                 updateTrendsDashboard();
-                console.log('Updating summary dashboard');
                 updateSummaryDashboard();
             }
-            console.log('Update complete');
         }
         
         if (localStorage.getItem('darkMode') === 'enabled') {
@@ -2312,6 +2303,9 @@
         
         function createCampaignCharts() {
             if (!metaData || !googleData) return;
+            
+            // Don't try to create charts if the canvas elements don't exist (tab not active)
+            if (!document.getElementById('campaignBubbleChart')) return;
             
             const metrics = calculateCampaignMetrics();
             const allCampaigns = [
@@ -2701,6 +2695,9 @@
         
         function createRevenueCharts() {
             if (!businessData || businessData.length === 0) return;
+            
+            // Don't try to create charts if the canvas elements don't exist (tab not active)
+            if (!document.getElementById('revenueChannelChart')) return;
             
             const months = businessData.map(d => d.month.split(' ')[0]); // Just month names
             const adRevenue = businessData.map(d => d.googleRevenue + d.metaRevenue);
@@ -3216,6 +3213,9 @@
         function createBusinessCharts() {
             if (!businessData) return;
             
+            // Don't try to create charts if the canvas elements don't exist (tab not active)
+            if (!document.getElementById('revenueChart')) return;
+            
             const months = businessData.map(d => d.month);
             const margin = parseFloat(document.getElementById('businessMargin').value);
             const isDark = document.body.classList.contains('dark-mode');
@@ -3575,6 +3575,9 @@
         
         function createTrendsCharts() {
             if (!businessData) return;
+            
+            // Don't try to create charts if the canvas elements don't exist (tab not active)
+            if (!document.getElementById('revenueTrendChart')) return;
             
             const months = businessData.map(d => d.month);
             const margin = parseFloat(document.getElementById('businessMargin').value);

@@ -3068,7 +3068,6 @@
             
             // Calculate additional metrics
             const totalGrossProfit = currentMonth.totalSales * margin;
-            const adSpendPercent = currentMonth.totalSales > 0 ? (totalAdSpend / currentMonth.totalSales) * 100 : 0;
             const revenuePerVisitor = currentMonth.traffic > 0 ? currentMonth.websiteSales / currentMonth.traffic : 0;
             const breakevenRoasCard = 1 / margin;
             const roasVsBreakeven = adROAS - breakevenRoasCard;
@@ -3094,11 +3093,6 @@
                     <div class="metric-label">Blended ROAS</div>
                     <div class="metric-value ${adROAS >= breakevenRoasCard ? 'positive' : 'negative'}">${adROAS.toFixed(2)}x</div>
                     <div class="metric-subtext">${roasVsBreakeven >= 0 ? '+' : ''}${roasVsBreakeven.toFixed(2)}x vs ${breakevenRoasCard.toFixed(1)}x break-even</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Spend % of Revenue</div>
-                    <div class="metric-value">${adSpendPercent.toFixed(1)}%</div>
-                    <div class="metric-subtext">${formatCurrency(totalAdSpend)} of ${formatCurrency(currentMonth.totalSales)}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Revenue per Visitor</div>
@@ -3847,28 +3841,6 @@
                 }
             }
             
-            function getAdSpendStatus(percent) {
-                if (percent < 5) {
-                    return `<span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Lean</span>`;
-                } else if (percent <= 12) {
-                    return `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Typical</span>`;
-                } else if (percent <= 20) {
-                    return `<span style="background: #fef9c3; color: #854d0e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Growth</span>`;
-                } else {
-                    return `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Aggressive</span>`;
-                }
-            }
-            
-            // Key metrics
-            const adSpendPercent = currentMonth.totalSales > 0 ? (currentAdSpend / currentMonth.totalSales) * 100 : 0;
-            let lastAdSpendPercent = 0;
-            let adSpendPercentChange = 0;
-            if (lastMonth) {
-                const lastTotalAdSpend = lastMonth.googleSpend + lastMonth.metaSpend;
-                lastAdSpendPercent = lastMonth.totalSales > 0 ? (lastTotalAdSpend / lastMonth.totalSales) * 100 : 0;
-                adSpendPercentChange = lastAdSpendPercent > 0 ? ((adSpendPercent - lastAdSpendPercent) / lastAdSpendPercent) * 100 : 0;
-            }
-            
             let metricsHTML = `
                 <div class="metric-card">
                     <div class="metric-label">Total Revenue</div>
@@ -3884,11 +3856,6 @@
                     <div class="metric-label">Ad Net Profit</div>
                     <div class="metric-value ${currentNetProfit >= 0 ? 'positive' : ''}">${formatCurrency(currentNetProfit)}</div>
                     <div class="metric-subtext">At ${(margin * 100).toFixed(0)}% margin</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Spend % of Revenue</div>
-                    <div class="metric-value">${adSpendPercent.toFixed(1)}%</div>
-                    <div class="metric-subtext">${getAdSpendStatus(adSpendPercent)} ${lastMonth ? getStatusBadge(adSpendPercentChange, adSpendPercentChange <= 0) + ' vs last month' : ''}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Website Traffic</div>

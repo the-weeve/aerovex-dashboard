@@ -2201,7 +2201,7 @@
                     <div class="metric-subtext">${formatCurrency(metrics.total.spend / metrics.days)}/day</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Total Ad Revenue</div>
+                    <div class="metric-label">Total Revenue from Ads</div>
                     <div class="metric-value">${formatCurrency(metrics.total.revenue)}</div>
                     <div class="metric-subtext">${formatCurrency(metrics.total.revenue / metrics.days)}/day</div>
                 </div>
@@ -2849,7 +2849,7 @@
             });
             
             // Chart 2: Website Sales Attribution (Ad-Driven, Organic, Recovered Cart)
-            // Calculate organic sales: Website Sales - Ad Revenue
+            // Calculate organic sales: Website Sales - Revenue from Ads
             const adDrivenSales = businessData.map(d => d.googleRevenue + d.metaRevenue);
             const organicSales = businessData.map((d, i) => {
                 const organic = d.websiteSales - adDrivenSales[i];
@@ -3359,7 +3359,7 @@
                     datasets: [
                         {
                             type: 'bar',
-                            label: 'Ad Revenue',
+                            label: 'Revenue from Ads',
                             data: businessData.map(d => d.googleRevenue + d.metaRevenue),
                             backgroundColor: 'rgba(16, 185, 129, 0.8)',
                             borderColor: 'rgba(16, 185, 129, 1)',
@@ -3570,7 +3570,7 @@
                     <div class="metric-subtext">${formatChange(adSpendChange)} vs last month</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Ad Revenue</div>
+                    <div class="metric-label">Revenue from Ads</div>
                     <div class="metric-value">${formatCurrency(currentAdRevenue)}</div>
                     <div class="metric-subtext">${formatChange(adRevenueChange)} vs last month</div>
                 </div>
@@ -3594,7 +3594,7 @@
                         <th>Month</th>
                         <th>Total Revenue</th>
                         <th>Ad Spend</th>
-                        <th>Ad Revenue</th>
+                        <th>Revenue from Ads</th>
                         <th>ROAS</th>
                         <th>Traffic</th>
                     </tr>
@@ -3655,7 +3655,7 @@
                             fill: true
                         },
                         {
-                            label: 'Ad Revenue',
+                            label: 'Revenue from Ads',
                             data: businessData.map(d => d.googleRevenue + d.metaRevenue),
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -4301,7 +4301,7 @@
                     const mRoas = mSpend > 0 ? (mRev / mSpend).toFixed(2) : 'N/A';
                     const sales = m.totalSales || 0;
                     const traffic = m.traffic || 0;
-                    context += `- ${m.month}: Sales $${sales.toLocaleString()}, Ad Spend $${mSpend.toLocaleString()}, Ad Revenue $${mRev.toLocaleString()}, ROAS ${mRoas}x, Traffic ${traffic.toLocaleString()}\n`;
+                    context += `- ${m.month}: Sales $${sales.toLocaleString()}, Ad Spend $${mSpend.toLocaleString()}, Revenue from Ads $${mRev.toLocaleString()}, ROAS ${mRoas}x, Traffic ${traffic.toLocaleString()}\n`;
                 });
             }
             

@@ -1949,24 +1949,33 @@
         }
         
         function updateAllTabs(newMargin) {
-            // newMargin is passed directly from the selector
+            console.log('updateAllTabs called with margin:', newMargin);
             
             // Sync all margin selectors to the same value
             const marginSelectors = ['businessMargin', 'campaignMargin', 'trendsMargin', 'summaryMargin'];
             marginSelectors.forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.value = newMargin;
+                if (el) {
+                    el.value = newMargin;
+                    console.log('Set', id, 'to', newMargin);
+                }
             });
             
             // Update all dashboards
+            console.log('Updating dashboards...');
             if (metaData && googleData) {
+                console.log('Updating campaign dashboard');
                 updateCampaignDashboard();
             }
             if (businessData) {
+                console.log('Updating business dashboard');
                 updateBusinessDashboard();
+                console.log('Updating trends dashboard');
                 updateTrendsDashboard();
+                console.log('Updating summary dashboard');
                 updateSummaryDashboard();
             }
+            console.log('Update complete');
         }
         
         if (localStorage.getItem('darkMode') === 'enabled') {

@@ -1607,7 +1607,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="campaignMargin">Margin:</label>
-                        <select id="campaignMargin" onchange="updateAllTabs()">
+                        <select id="campaignMargin" onchange="updateAllTabs(this.value)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1642,18 +1642,6 @@
                     <div id="topCampaignCards"></div>
                 </div>
                 
-                <div class="chart-section">
-                    <h2>Profit by Campaign</h2>
-                    <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Net profit after ad spend at current margin</p>
-                    <div class="chart-container">
-                        <canvas id="campaignProfitChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="chart-section">
-                    <h2>Campaign Performance Table</h2>
-                    <table id="campaignTable"></table>
-                </div>
             </div>
         </div>
         
@@ -1717,7 +1705,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="businessMargin">Margin:</label>
-                        <select id="businessMargin" onchange="updateAllTabs()">
+                        <select id="businessMargin" onchange="updateAllTabs(this.value)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1787,7 +1775,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="trendsMargin">Margin:</label>
-                        <select id="trendsMargin" onchange="updateAllTabs()">
+                        <select id="trendsMargin" onchange="updateAllTabs(this.value)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1840,7 +1828,7 @@
                     </div>
                     <div class="tab-margin-selector">
                         <label for="summaryMargin">Margin:</label>
-                        <select id="summaryMargin" onchange="updateAllTabs()">
+                        <select id="summaryMargin" onchange="updateAllTabs(this.value)">
                             <option value="0.30">30%</option>
                             <option value="0.35">35%</option>
                             <option value="0.40">40%</option>
@@ -1960,26 +1948,34 @@
             }
         }
         
-        function updateAllTabs() {
-            // Get the margin from the selector that triggered this
-            const newMargin = event.target.value;
+        function updateAllTabs(newMargin) {
+            console.log('updateAllTabs called with margin:', newMargin);
             
             // Sync all margin selectors to the same value
             const marginSelectors = ['businessMargin', 'campaignMargin', 'trendsMargin', 'summaryMargin'];
             marginSelectors.forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.value = newMargin;
+                if (el) {
+                    el.value = newMargin;
+                    console.log('Set', id, 'to', newMargin);
+                }
             });
             
             // Update all dashboards
+            console.log('Updating dashboards...');
             if (metaData && googleData) {
+                console.log('Updating campaign dashboard');
                 updateCampaignDashboard();
             }
             if (businessData) {
+                console.log('Updating business dashboard');
                 updateBusinessDashboard();
+                console.log('Updating trends dashboard');
                 updateTrendsDashboard();
+                console.log('Updating summary dashboard');
                 updateSummaryDashboard();
             }
+            console.log('Update complete');
         }
         
         if (localStorage.getItem('darkMode') === 'enabled') {
@@ -2301,42 +2297,11 @@
             
             document.getElementById('progressComparison').innerHTML = progressHTML;
             
-            // Campaign table
+            // All campaigns for card display
             const allCampaigns = [
                 ...metaData.campaigns.map(c => ({ ...c, platform: 'Meta' })),
                 ...googleData.campaigns.map(c => ({ ...c, platform: 'Google' }))
-            ].sort((a, b) => (b.revenue / b.spend) - (a.revenue / a.spend));
-            
-            let tableHTML = '<thead><tr><th>Campaign</th><th>Platform</th><th>Spend</th><th>Revenue</th><th>ROAS</th><th>Status</th></tr></thead><tbody>';
-            allCampaigns.forEach(camp => {
-                const roas = camp.spend > 0 ? camp.revenue / camp.spend : 0;
-                let statusClass = 'status-poor';
-                let statusText = 'Poor';
-                
-                if (roas >= metrics.breakevenRoas * 2) {
-                    statusClass = 'status-excellent';
-                    statusText = 'Excellent';
-                } else if (roas >= metrics.breakevenRoas * 1.5) {
-                    statusClass = 'status-good';
-                    statusText = 'Good';
-                } else if (roas >= metrics.breakevenRoas) {
-                    statusClass = 'status-okay';
-                    statusText = 'Okay';
-                }
-                
-                tableHTML += `
-                    <tr>
-                        <td style="font-weight: 500;">${camp.name}</td>
-                        <td>${camp.platform}</td>
-                        <td>${formatCurrency(camp.spend)}</td>
-                        <td>${formatCurrency(camp.revenue)}</td>
-                        <td><strong>${roas.toFixed(2)}x</strong></td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    </tr>
-                `;
-            });
-            tableHTML += '</tbody>';
-            document.getElementById('campaignTable').innerHTML = tableHTML;
+            ];
             
             // Top campaign cards
             generateTopCampaignCards(allCampaigns, metrics);
@@ -2572,12 +2537,22 @@
                 return roasB - roasA;
             });
             
-            // Calculate max values for bar scaling
-            const maxSpend = Math.max(...sortedByRoas.map(c => c.spend));
-            const maxRevenue = Math.max(...sortedByRoas.map(c => c.revenue));
-            const maxRoas = Math.max(...sortedByRoas.map(c => c.spend > 0 ? c.revenue / c.spend : 0));
-            
-            let html = '<div style="display: flex; flex-direction: column; gap: 20px;">';
+            let html = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                        <thead>
+                            <tr style="background: #f9fafb;">
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Campaign</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Platform</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Spend</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Revenue</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">ROAS</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Profit</th>
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb;">Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
             
             sortedByRoas.forEach(camp => {
                 const roas = camp.spend > 0 ? camp.revenue / camp.spend : 0;
@@ -2586,83 +2561,65 @@
                 // Determine performance level
                 let badge = '';
                 let badgeColor = '';
+                let progressWidth = 0;
+                let progressColor = '';
                 
                 if (roas >= metrics.breakevenRoas * 2) {
-                    badge = 'EXCELLENT';
+                    badge = 'Excellent';
                     badgeColor = '#10b981';
+                    progressWidth = 90;
+                    progressColor = '#10b981';
                 } else if (roas >= metrics.breakevenRoas * 1.5) {
-                    badge = 'GOOD';
+                    badge = 'Good';
                     badgeColor = '#3b82f6';
+                    progressWidth = 65;
+                    progressColor = '#3b82f6';
                 } else if (roas >= metrics.breakevenRoas) {
-                    badge = 'OKAY';
+                    badge = 'Okay';
                     badgeColor = '#f59e0b';
+                    progressWidth = 45;
+                    progressColor = '#f59e0b';
                 } else {
-                    badge = 'POOR';
+                    badge = 'Poor';
                     badgeColor = '#ef4444';
+                    progressWidth = 25;
+                    progressColor = '#ef4444';
                 }
                 
-                // Calculate bar widths (percentage of max)
-                const spendWidth = maxSpend > 0 ? (camp.spend / maxSpend * 100) : 0;
-                const revenueWidth = maxRevenue > 0 ? (camp.revenue / maxRevenue * 100) : 0;
-                const roasWidth = maxRoas > 0 ? (roas / maxRoas * 100) : 0;
+                const platformBadgeStyle = camp.platform === 'Meta' 
+                    ? 'background: #dbeafe; color: #1e40af;' 
+                    : 'background: #dcfce7; color: #166534;';
                 
                 html += `
-                    <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; background: white;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <div>
-                                <div style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">${camp.name}</div>
-                                <div style="font-size: 12px; color: #6b7280;">${camp.platform} Campaign</div>
-                            </div>
-                            <div style="padding: 4px 10px; background: ${badgeColor}; color: white; border-radius: 12px; font-size: 11px; font-weight: 700;">
-                                ${badge}
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; gap: 16px;">
-                            <!-- Spend Bar -->
-                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
-                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Spend</div>
-                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
-                                    <div style="height: 100%; background: #8b5cf6; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${spendWidth}%;">
-                                        ${formatCurrency(camp.spend)}
-                                    </div>
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                        <td style="padding: 16px; font-weight: 600; color: #1a1d29;">${camp.name}</td>
+                        <td style="padding: 16px; text-align: center;">
+                            <span style="display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; ${platformBadgeStyle}">
+                                ${camp.platform}
+                            </span>
+                        </td>
+                        <td style="padding: 16px; text-align: right;">${formatCurrency(camp.spend)}</td>
+                        <td style="padding: 16px; text-align: right; font-weight: 600;">${formatCurrency(camp.revenue)}</td>
+                        <td style="padding: 16px; text-align: right; font-weight: 700; color: ${roas >= metrics.breakevenRoas ? '#10b981' : '#ef4444'};">${roas.toFixed(2)}x</td>
+                        <td style="padding: 16px; text-align: right; font-weight: 600; color: ${profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(profit)}</td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; width: 100%; height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; background: ${progressColor}; border-radius: 4px; width: ${progressWidth}%;"></div>
                                 </div>
-                                <div style="font-size: 14px; font-weight: 600; text-align: right;">${Math.round(spendWidth)}%</div>
+                                <span style="font-size: 12px; font-weight: 600; color: ${badgeColor}; min-width: 70px;">${badge}</span>
                             </div>
-                            
-                            <!-- Revenue Bar -->
-                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
-                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Revenue</div>
-                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
-                                    <div style="height: 100%; background: #10b981; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${revenueWidth}%;">
-                                        ${formatCurrency(camp.revenue)}
-                                    </div>
-                                </div>
-                                <div style="font-size: 14px; font-weight: 600; text-align: right;">${Math.round(revenueWidth)}%</div>
-                            </div>
-                            
-                            <!-- ROAS Bar -->
-                            <div style="display: grid; grid-template-columns: 120px 1fr 100px; gap: 12px; align-items: center;">
-                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">ROAS</div>
-                                <div style="height: 32px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative;">
-                                    <div style="height: 100%; background: #3b82f6; display: flex; align-items: center; padding: 0 12px; color: white; font-weight: 700; font-size: 13px; width: ${roasWidth}%;">
-                                        ${roas.toFixed(2)}x
-                                    </div>
-                                </div>
-                                <div style="font-size: 14px; font-weight: 600; text-align: right; color: ${roas >= metrics.breakevenRoas ? '#10b981' : '#ef4444'};">${roas.toFixed(2)}x</div>
-                            </div>
-                            
-                            <!-- Profit Display -->
-                            <div style="display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; padding-top: 8px; border-top: 1px solid #f3f4f6;">
-                                <div style="font-size: 13px; font-weight: 600; color: #6b7280;">Profit</div>
-                                <div style="font-size: 18px; font-weight: 700; color: ${profit > 0 ? '#10b981' : '#ef4444'};">${formatCurrency(profit)}</div>
-                            </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             });
             
-            html += '</div>';
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
             container.innerHTML = html;
         }
         
@@ -3120,7 +3077,6 @@
             
             // Calculate additional metrics
             const totalGrossProfit = currentMonth.totalSales * margin;
-            const adSpendPercent = currentMonth.totalSales > 0 ? (totalAdSpend / currentMonth.totalSales) * 100 : 0;
             const revenuePerVisitor = currentMonth.traffic > 0 ? currentMonth.websiteSales / currentMonth.traffic : 0;
             const breakevenRoasCard = 1 / margin;
             const roasVsBreakeven = adROAS - breakevenRoasCard;
@@ -3146,11 +3102,6 @@
                     <div class="metric-label">Blended ROAS</div>
                     <div class="metric-value ${adROAS >= breakevenRoasCard ? 'positive' : 'negative'}">${adROAS.toFixed(2)}x</div>
                     <div class="metric-subtext">${roasVsBreakeven >= 0 ? '+' : ''}${roasVsBreakeven.toFixed(2)}x vs ${breakevenRoasCard.toFixed(1)}x break-even</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Spend % of Revenue</div>
-                    <div class="metric-value">${adSpendPercent.toFixed(1)}%</div>
-                    <div class="metric-subtext">${formatCurrency(totalAdSpend)} of ${formatCurrency(currentMonth.totalSales)}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Revenue per Visitor</div>
@@ -3899,28 +3850,6 @@
                 }
             }
             
-            function getAdSpendStatus(percent) {
-                if (percent < 5) {
-                    return `<span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Lean</span>`;
-                } else if (percent <= 12) {
-                    return `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Typical</span>`;
-                } else if (percent <= 20) {
-                    return `<span style="background: #fef9c3; color: #854d0e; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Growth</span>`;
-                } else {
-                    return `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">Aggressive</span>`;
-                }
-            }
-            
-            // Key metrics
-            const adSpendPercent = currentMonth.totalSales > 0 ? (currentAdSpend / currentMonth.totalSales) * 100 : 0;
-            let lastAdSpendPercent = 0;
-            let adSpendPercentChange = 0;
-            if (lastMonth) {
-                const lastTotalAdSpend = lastMonth.googleSpend + lastMonth.metaSpend;
-                lastAdSpendPercent = lastMonth.totalSales > 0 ? (lastTotalAdSpend / lastMonth.totalSales) * 100 : 0;
-                adSpendPercentChange = lastAdSpendPercent > 0 ? ((adSpendPercent - lastAdSpendPercent) / lastAdSpendPercent) * 100 : 0;
-            }
-            
             let metricsHTML = `
                 <div class="metric-card">
                     <div class="metric-label">Total Revenue</div>
@@ -3936,11 +3865,6 @@
                     <div class="metric-label">Ad Net Profit</div>
                     <div class="metric-value ${currentNetProfit >= 0 ? 'positive' : ''}">${formatCurrency(currentNetProfit)}</div>
                     <div class="metric-subtext">At ${(margin * 100).toFixed(0)}% margin</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Ad Spend % of Revenue</div>
-                    <div class="metric-value">${adSpendPercent.toFixed(1)}%</div>
-                    <div class="metric-subtext">${getAdSpendStatus(adSpendPercent)} ${lastMonth ? getStatusBadge(adSpendPercentChange, adSpendPercentChange <= 0) + ' vs last month' : ''}</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Website Traffic</div>

@@ -1642,18 +1642,6 @@
                     <div id="topCampaignCards"></div>
                 </div>
                 
-                <div class="chart-section">
-                    <h2>Profit by Campaign</h2>
-                    <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">Net profit after ad spend at current margin</p>
-                    <div class="chart-container">
-                        <canvas id="campaignProfitChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="chart-section">
-                    <h2>Campaign Performance Table</h2>
-                    <table id="campaignTable"></table>
-                </div>
             </div>
         </div>
         
@@ -1906,7 +1894,6 @@
         let googleData = null;
         let businessData = null;
         let campaignBubbleChart = null;
-        let campaignProfitChart = null;
         let revenueChart = null;
         let adChart = null;
         let trafficChart = null;
@@ -2301,42 +2288,11 @@
             
             document.getElementById('progressComparison').innerHTML = progressHTML;
             
-            // Campaign table
+            // All campaigns for card display
             const allCampaigns = [
                 ...metaData.campaigns.map(c => ({ ...c, platform: 'Meta' })),
                 ...googleData.campaigns.map(c => ({ ...c, platform: 'Google' }))
-            ].sort((a, b) => (b.revenue / b.spend) - (a.revenue / a.spend));
-            
-            let tableHTML = '<thead><tr><th>Campaign</th><th>Platform</th><th>Spend</th><th>Revenue</th><th>ROAS</th><th>Status</th></tr></thead><tbody>';
-            allCampaigns.forEach(camp => {
-                const roas = camp.spend > 0 ? camp.revenue / camp.spend : 0;
-                let statusClass = 'status-poor';
-                let statusText = 'Poor';
-                
-                if (roas >= metrics.breakevenRoas * 2) {
-                    statusClass = 'status-excellent';
-                    statusText = 'Excellent';
-                } else if (roas >= metrics.breakevenRoas * 1.5) {
-                    statusClass = 'status-good';
-                    statusText = 'Good';
-                } else if (roas >= metrics.breakevenRoas) {
-                    statusClass = 'status-okay';
-                    statusText = 'Okay';
-                }
-                
-                tableHTML += `
-                    <tr>
-                        <td style="font-weight: 500;">${camp.name}</td>
-                        <td>${camp.platform}</td>
-                        <td>${formatCurrency(camp.spend)}</td>
-                        <td>${formatCurrency(camp.revenue)}</td>
-                        <td><strong>${roas.toFixed(2)}x</strong></td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    </tr>
-                `;
-            });
-            tableHTML += '</tbody>';
-            document.getElementById('campaignTable').innerHTML = tableHTML;
+            ];
             
             // Top campaign cards
             generateTopCampaignCards(allCampaigns, metrics);
